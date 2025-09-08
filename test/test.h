@@ -1,3 +1,11 @@
+/*
+ * File: test/test.h
+ * Project: STM32 VCU Firmware
+ * Author: Chinmoy Bhuyan
+ * Copyright (C) 2025 Joulepoint Private Limited
+ * Note: This file may include modifications; original notices are preserved.
+ */
+
 #ifndef TEST_H_INCLUDED
 #define TEST_H_INCLUDED
 #include <iostream>

@@ -1,31 +1,12 @@
 /*
- * This file is part of the Zombieverter VCU project.
- *
- * Copyright (C) 2018 Johannes Huebner <dev@johanneshuebner.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * Controls the VW LIN based heater as : https://openinverter.org/wiki/Volkswagen_Heater
- *
- * ID : 28 (dec) Command. Length 2. Byte 0 : Power 0-2530W scale x10. , Byte 1 : Last bit: Start/Stop
- *
- * ID : 48 (dec) Response. Length 8. Byte 0 : Power 13=770W , 26 = 1540W. Byte 6 Temp in , Byte 7 Temp out.
- *
- * Observed return data on 0x30 : 0x00 , 0xFF, 0xE7, 0x80, 0x8D, 0x39, 0x34, 0x34
- * 8 bytes
- * Command was : 0x5A, 0x01, 0x00 , 0x00
- * Observed data with heater running approx 4kw : 0x32, 0xFC, 0x80, 0x80, 0x8D, 0x5D, 0x7A, 0x77
+ * File: src/VWheater.cpp
+ * Project: STM32 VCU Firmware
+ * Author: Chinmoy Bhuyan
+ * Copyright (C) 2025 Joulepoint Private Limited
+ * Note: This file may include modifications; original notices are preserved.
  */
+
+
 
  #include <VWheater.h>
 

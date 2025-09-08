@@ -1,3 +1,11 @@
+/*
+ * File: src/charger.cpp
+ * Project: STM32 VCU Firmware
+ * Author: Chinmoy Bhuyan
+ * Copyright (C) 2025 Joulepoint Private Limited
+ * Note: This file may include modifications; original notices are preserved.
+ */
+
 #include <charger.h>
 
 bool chargerClass::HVreq=false;

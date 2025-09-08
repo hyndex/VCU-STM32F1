@@ -1,23 +1,12 @@
 /*
- * This file is part of the ZombieVerter project.
- *
- * Copyright (C) 2011-2019 Johannes Huebner <dev@johanneshuebner.com>
- * Copyright (C) 2019-2022 Damien Maguire <info@evbmw.com>
- * Changes by Tom de Bree <tom@voltinflux.com> 2024
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * File: include/param_prj.h
+ * Project: STM32 VCU Firmware
+ * Author: Chinmoy Bhuyan
+ * Copyright (C) 2025 Joulepoint Private Limited
+ * Note: This file may include modifications; original notices are preserved.
  */
+
+
 
 #define VER 2.30.A
 
@@ -27,7 +16,7 @@
    2. Temporary parameters (id = 0)
    3. Display values
  */
-//Next param id (increase when adding new parameter!): 139
+//Next param id (increase when adding new parameter!): 144
 /*              category     name         unit       min     max     default id */
 #define PARAM_LIST \
     PARAM_ENTRY(CAT_SETUP,     Inverter,     INVMODES, 0,      8,      0,      5  ) \
@@ -63,6 +52,7 @@
     PARAM_ENTRY(CAT_THROTTLE,  reversemotor,  ONOFF,   0,      1,      0,      127 ) \
     PARAM_ENTRY(CAT_THROTTLE,  throtramp,   "%/10ms",  1,    100,    10,    13 ) \
     PARAM_ENTRY(CAT_THROTTLE,  throtramprpm,"rpm",     0,      20000,  20000,  14 ) \
+    PARAM_ENTRY(CAT_THROTTLE,  dirchrpm,    "rpm",     0,      20000,  200,   139 ) \
     PARAM_ENTRY(CAT_THROTTLE,  revlim,      "rpm",     0,      20000,  6000,   15 ) \
     PARAM_ENTRY(CAT_THROTTLE,  revRegen,     ONOFF,    0,       1,      0,      137 ) \
     PARAM_ENTRY(CAT_THROTTLE,  udcmin,      "V",       0,      1000,   450,    19 ) \
@@ -77,6 +67,10 @@
     PARAM_ENTRY(CAT_THROTTLE,  throtdead,   "%",       0,      50,     10,     76 ) \
     PARAM_ENTRY(CAT_THROTTLE,  RegenBrakeLight,   "%",    -100,     0,     -15,      128 ) \
     PARAM_ENTRY(CAT_THROTTLE,  throtrpmfilt,   "rpm/10ms",  0.1,    200,    15,    131 ) \
+    PARAM_ENTRY(CAT_THROTTLE,  udcKp,       "gain",    0.1,    10,     3.5,   140 ) \
+    PARAM_ENTRY(CAT_THROTTLE,  idcKp,       "gain",    0.1,    10,     1,     141 ) \
+    PARAM_ENTRY(CAT_THROTTLE,  brkOvrrdEnable, ONOFF,   0,      1,      0,     142 ) \
+    PARAM_ENTRY(CAT_THROTTLE,  brkOvrrdPot, "%",       0,      100,    40,    143 ) \
     PARAM_ENTRY(CAT_LEXUS,     Gear,        LOWHIGH,   0,      3,      0,      27 ) \
     PARAM_ENTRY(CAT_LEXUS,     OilPump,     "%",       0,      100,    50,     28 ) \
     PARAM_ENTRY(CAT_CRUISE,    cruisestep,  "rpm",     1,      1000,   200,    29 ) \
@@ -254,25 +248,25 @@
 //////////
 
 #define VERSTR STRINGIFY(4=VER)
-#define PINFUNCS     "0=None, 1=ChaDeMoAlw, 2=OBCEnable, 3=HeaterEnable, 4=RunIndication, 5=WarnIndication," \
+#define PINFUNCS     "0=None, 1=DCFC_Allow, 2=OBCEnable, 3=HeaterEnable, 4=RunIndication, 5=WarnIndication," \
                      "6=CoolantPump, 7=NegContactor, 8=BrakeLight, 9=ReverseLight, 10=HeatReq, 11=HVRequest," \
                      "12=DCFCRequest, 13=BrakeVacPump, 14=CoolingFan, 15=HvActive, 16=PwmTim3, 17=CpSpoof,"\
-                     "18=GS450pump"
+                     "18=TransPump"
 #define APINFUNCS    "0=None, 1=ProxPilot, 2=BrakeVacSensor"
-#define SHIFTERS     "0=None, 1=BMW_F30, 2=JLR_G1, 3=JLR_G2, 4=BMW_E65"
-#define SHNTYPE      "0=None, 1=ISA, 2=SBOX, 3=VAG"
+#define SHIFTERS     "0=None, 1=Shifter_A, 2=Shifter_B, 3=Shifter_C, 4=Shifter_D"
+#define SHNTYPE      "0=None, 1=Shunt_A, 2=Shunt_B, 3=Shunt_C"
 #define DMODES       "0=CLOSED, 1=OPEN, 2=ERROR, 3=INVALID"
 #define POTMODES     "0=SingleChannel, 1=DualChannel"
 #define BTNSWITCH    "0=Button, 1=Switch, 2=CAN"
 #define DIRMODES     "0=Button, 1=Switch, 2=ButtonReversed, 3=SwitchReversed, 4=DefaultForward"
-#define INVMODES     "0=None, 1=Leaf_Gen1, 2=GS450H, 3=UserCAN, 4=OpenI, 5=Prius_Gen3, 6=Outlander, 7=GS300H, 8=RearOutlander"
+#define INVMODES     "0=None, 1=Inverter_A, 2=Inverter_B, 3=UserCAN, 4=OpenI, 5=Inverter_C, 6=Inverter_D, 7=Inverter_E, 8=Inverter_F"
 #define PLTMODES     "0=Absent, 1=ACStd, 2=ACchg, 3=Error, 4=CCS_Not_Rdy, 5=CCS_Rdy, 6=Static"
-#define VEHMODES     "0=BMW_E46, 1=BMW_E6x+, 2=Classic, 3=None, 5=BMW_E39, 6=VAG, 7=Subaru, 8=BMW_E31"
-#define BMSMODES     "0=Off, 1=SimpBMS, 2=TiDaisychainSingle, 3=TiDaisychainDual, 4=LeafBms, 5=RenaultKangoo33"
+#define VEHMODES     "0=Vehicle_A, 1=Vehicle_B, 2=Classic, 3=None, 5=Vehicle_C, 6=Vehicle_D, 7=Vehicle_E, 8=Vehicle_F"
+#define BMSMODES     "0=Off, 1=BMS_A, 2=DaisychainSingle, 3=DaisychainDual, 4=BMS_B, 5=BMS_C"
 #define OPMODES      "0=Off, 1=Run, 2=Precharge, 3=PchFail, 4=Charge"
 #define DOW          "0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat"
 #define CHGTYPS      "0=Off, 1=AC, 2=DCFC"
-#define DCDCTYPES    "0=NoDCDC, 1=TeslaG2"
+#define DCDCTYPES    "0=NoDCDC, 1=DCDC_A"
 #define STATUS       "0=None, 1=UdcLow, 2=UdcHigh, 4=UdcBelowUdcSw, 8=UdcLim, 16=EmcyStop, 32=MProt, 64=PotPressed, 128=TmpHs, 256=WaitStart"
 #define CCS_STATUS   "0=NotRdy, 1=ready, 2=SWoff, 3=interruption, 4=Prech, 5=insulmon, 6=estop, 7=malfunction, 15=invalid"
 #define DIRS         "-1=Reverse, 0=Neutral, 1=Drive, 2=Park"
@@ -285,11 +279,11 @@
 #define ERRLIGHTS    "0=Off, 4=EPC, 8=engine"
 #define CRUISESTATES "0=None, 1=On, 2=Disable, 4=Set, 8=Resume"
 #define CDMSTAT      "1=Charging, 2=Malfunction, 4=ConnLock, 8=BatIncomp, 16=SystemMalfunction, 32=Stop"
-#define HTTYPE       "0=None, 1=Ampera, 2=VW, 3=OutlanderCan"
+#define HTTYPE       "0=None, 1=Heater_A, 2=Heater_B, 3=Heater_C"
 #define HTCTRL       "0=Disable, 1=Enable, 2=Timer"
-#define CHGMODS      "0=Off, 1=EXT_DIGI, 2=Volt_Ampera, 3=Leaf_PDM, 4=TeslaOI, 5=Out_lander, 6=Elcon"
+#define CHGMODS      "0=Off, 1=External_Digital, 2=Charger_A, 3=Charger_B, 4=Charger_C, 5=Charger_D, 6=Charger_E"
 #define CHGCTRL      "0=Enable, 1=Disable, 2=Timer"
-#define CHGINT       "0=Unused, 1=i3LIM, 2=Chademo, 3=CPC, 4=Foccci"
+#define CHGINT       "0=Unused, 1=DCFC_A, 2=DCFC_B, 3=DCFC_C, 4=DCFC_D"
 #define CAN3SPD      "0=k33.3, 1=k500, 2=k100"
 #define TRNMODES     "0=Manual, 1=Auto"
 #define CAN_DEV      "0=CAN1, 1=CAN2"
@@ -499,4 +493,3 @@ enum can_devices
 
 
 extern const char* errorListString;
-

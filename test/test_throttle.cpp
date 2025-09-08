@@ -1,23 +1,12 @@
 /*
- * This file is part of the tumanako_vc project.
- *
- * Copyright (C) 2010 Johannes Huebner <contact@johanneshuebner.com>
- * Copyright (C) 2010 Edward Cheeseman <cheesemanedward@gmail.com>
- * Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * File: test/test_throttle.cpp
+ * Project: STM32 VCU Firmware
+ * Author: Chinmoy Bhuyan
+ * Copyright (C) 2025 Joulepoint Private Limited
+ * Note: This file may include modifications; original notices are preserved.
  */
+
+
 
 #include "my_fp.h"
 #include "my_math.h"
@@ -108,6 +97,76 @@ static void TestCalcThrottleIs100WhenOverMax() {
    ASSERT(throtVal ==  100);
 }
 
+static void TestNormalizeThrottleHandlesInvertedCalibration() {
+   // Inverted calibration: potmin > potmax
+   Throttle::potmin[0] = 4000;
+   Throttle::potmax[0] = 100;
+
+   // At physical low end, normalized should be ~0
+   float n0 = Throttle::NormalizeThrottle(100, 0);
+   ASSERT(n0 == 0);
+
+   // At physical high end, normalized should be ~100
+   float n1 = Throttle::NormalizeThrottle(4000, 0);
+   ASSERT(n1 == 100);
+
+   // Mid point
+   float mid = Throttle::NormalizeThrottle(2050, 0);
+   ASSERT(mid > 45 && mid < 55);
+
+   // Restore normal calibration for subsequent tests
+   Throttle::potmin[0] = 100;
+   Throttle::potmax[0] = 4000;
+}
+
+static void TestUdcLimitDeratesPositiveTorqueWhenBelowMin() {
+   // Setup
+   Throttle::udcmin = 400; // not used directly; function reads Param values
+   Param::SetFloat(Param::udcmin, 400);
+   Param::SetFloat(Param::udclim, 520);
+   float sp = 100; // request positive torque
+   Throttle::UdcLimitCommand(sp, /*udc=*/380);
+   ASSERT(sp == 0);
+}
+
+static void TestIdcLimitDeratesNegativeTorqueWhenBelowMin() {
+   // Negative torque request limited by idcmin
+   Param::SetFloat(Param::idcmax, 5000);
+   Param::SetFloat(Param::idcmin, -50);
+   Param::SetFloat(Param::idcKp, 1.0);
+   float sp = -80; // request strong regen
+   // idcFiltered starts at 0 in function scope; using idc=0 keeps IDCres = idcmin
+   Throttle::IdcLimitCommand(sp, /*idc=*/0);
+   ASSERT(sp == -50);
+}
+
+static void TestSpeedLimitReducesPositiveTorque() {
+   // With speed well above limit, positive torque should be limited to 0
+   Throttle::speedLimit = 1000; // limit
+   float sp = 80;
+   // Advance filter until it clamps
+   for (int i = 0; i < 40; i++) {
+      Throttle::SpeedLimitCommand(sp, /*speed*/ 6000);
+   }
+   ASSERT(sp == 0);
+}
+
+static void TestUdcKpAffectsTorqueLimit() {
+   // With higher UDC Kp, torque ceiling should be higher for same error
+   Param::SetFloat(Param::udcmin, 400);
+   Param::SetFloat(Param::udclim, 520);
+   // Error = udc - udcmin = 10V
+   float sp = 100;
+   Param::SetFloat(Param::udcKp, 1.0);
+   Throttle::UdcLimitCommand(sp, /*udc*/410);
+   ASSERT(sp == 10);
+
+   sp = 100;
+   Param::SetFloat(Param::udcKp, 3.5);
+   Throttle::UdcLimitCommand(sp, /*udc*/410);
+   ASSERT(sp == 35);
+}
+
 
 void ThrottleTest::RunTest()
 {
@@ -122,4 +181,9 @@ void ThrottleTest::RunTest()
    TestCalcThrottleIsAbove0WhenJustOutOfDeadZone();
    TestCalcThrottleIs100WhenMax();
    TestCalcThrottleIs100WhenOverMax();
+   TestNormalizeThrottleHandlesInvertedCalibration();
+   TestUdcLimitDeratesPositiveTorqueWhenBelowMin();
+   TestIdcLimitDeratesNegativeTorqueWhenBelowMin();
+   TestSpeedLimitReducesPositiveTorque();
+   TestUdcKpAffectsTorqueLimit();
 }

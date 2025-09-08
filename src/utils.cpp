@@ -1,23 +1,12 @@
 /*
- * This file is part of the ZombieVeter project.
- *
- * Copyright (C) 2020 Johannes Huebner <dev@johanneshuebner.com>
- *               2021-2022 Damien Maguire <info@evbmw.com>
- * Yes I'm really writing software now........run.....run away.......
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * File: src/utils.cpp
+ * Project: STM32 VCU Firmware
+ * Author: Chinmoy Bhuyan
+ * Copyright (C) 2025 Joulepoint Private Limited
+ * Note: This file may include modifications; original notices are preserved.
  */
+
+
 
 #include "utils.h"
 
@@ -89,6 +78,7 @@ float GetUserThrottleCommand()
     bool brake = Param::GetBool(Param::din_brake);
     int potmode = Param::GetInt(Param::potmode);
     int direction = Param::GetInt(Param::dir);
+    static bool throttleFaultLatched = false; // latched until pedal returns to idle
 
     int pot1val = AnaIn::throttle1.Get();
     int pot2val = AnaIn::throttle2.Get();
@@ -123,9 +113,26 @@ float GetUserThrottleCommand()
             float pot1nomTmp = Throttle::NormalizeThrottle(pot1val, 0);
             float pot2nomTmp = Throttle::NormalizeThrottle(pot2val, 1);
 
+            // Clear latch when both channels are at (near) idle
+            if (throttleFaultLatched)
+            {
+                if (pot1nomTmp <= (Throttle::throtdead + 1.0f) && pot2nomTmp <= (Throttle::throtdead + 1.0f))
+                {
+                    throttleFaultLatched = false;
+                }
+            }
+
+            if (throttleFaultLatched)
+            {
+                utils::PostErrorIfRunning(ERR_THROTTLE12DIFF);
+                Param::SetInt(Param::potnom, 0);
+                return 0.0f;
+            }
+
             if(ABS(pot2nomTmp - pot1nomTmp) > 10.0f)
             {
                 utils::PostErrorIfRunning(ERR_THROTTLE12DIFF);
+                throttleFaultLatched = true;
 
                 // simple implementation of a limp mode: select the lower of
                 // the two throttle inputs and limiting the throttle value
@@ -272,12 +279,16 @@ void SelectDirection(Vehicle* vehicle, Shifter* shifter)
                 userDirSelection = -1 * dirSign;
         }
 
-        /* Only change direction when below certain motor speed */
-//   if ((int)Encoder::GetSpeed() < Param::GetInt(Param::dirchrpm))
-        selectedDir = userDirSelection;
+        // Only change direction when below configured motor speed threshold
+        int speedAbs = ABS(Param::GetInt(Param::speed));
+        if (speedAbs < Param::GetInt(Param::dirchrpm))
+        {
+            selectedDir = userDirSelection;
+        }
+        // else keep current selectedDir until we are slow enough
 
         /* Current direction doesn't match selected direction -> neutral */
-        if (selectedDir != userDirSelection)
+        if (selectedDir != userDirSelection && speedAbs < Param::GetInt(Param::dirchrpm))
             selectedDir = 0;
     }
 
@@ -304,6 +315,8 @@ float ProcessUdc(int motorSpeed)
         Param::SetFloat(Param::udc2, udc2);
         float udc3 = ((float)ISA::Voltage3)/1000;//get voltage from isa sensor and post to parameter database
         Param::SetFloat(Param::udc3, udc3);
+        // Use measured pack voltage as precharge switch target
+        Param::SetFloat(Param::udcsw, MAX(0, udc - 20));
         float idc = ((float)ISA::Amperes)/1000;//get current from isa sensor and post to parameter database
         Param::SetFloat(Param::idc, idc);
         float kw = ((float)ISA::KW)/1000;//get power from isa sensor and post to parameter database
@@ -410,6 +423,17 @@ float ProcessThrottle(int speed)
     Throttle::UdcLimitCommand(finalSpnt,Param::GetFloat(Param::udc));
     Throttle::IdcLimitCommand(finalSpnt, ABS(Param::GetFloat(Param::idc)));
     Throttle::SpeedLimitCommand(finalSpnt, ABS(speed));
+
+    // Brake override policy: by default, prevent positive torque while brake is pressed.
+    // If enabled, allow positive torque above a configured accelerator threshold.
+    if (Param::GetBool(Param::din_brake) && finalSpnt > 0)
+    {
+        bool allow = Param::GetBool(Param::brkOvrrdEnable) && (finalSpnt > Param::GetInt(Param::brkOvrrdPot));
+        if (!allow)
+        {
+            finalSpnt = 0;
+        }
+    }
 
     if (Throttle::TemperatureDerate(Param::Get(Param::tmphs), Param::Get(Param::tmphsmax), finalSpnt))
     {

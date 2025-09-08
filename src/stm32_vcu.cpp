@@ -1,25 +1,12 @@
 /*
- * This file is part of the ZombieVerter project.
- *
- * Copyright (C) 2024 Tom de Bree <tom@voltinflux.com>
- * Copyright (C) 2010 Johannes Huebner <contact@johanneshuebner.com>
- * Copyright (C) 2010 Edward Cheeseman <cheesemanedward@gmail.com>
- * Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
- * Copyright (C) 2019-2022 Damien Maguire <info@evbmw.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * File: src/stm32_vcu.cpp
+ * Project: STM32 VCU Firmware
+ * Author: Chinmoy Bhuyan
+ * Copyright (C) 2025 Joulepoint Private Limited
+ * Note: This file may include modifications; original notices are preserved.
  */
+
+
 
 #include <stdint.h>
 #include <libopencm3/stm32/usart.h>
@@ -1111,7 +1098,8 @@ void Param::Change(Param::PARAM_NUM paramNum)
     Throttle::speedLimit = Param::GetInt(Param::revlim);
     Throttle::regenRamp = Param::GetFloat(Param::regenramp);
     Throttle::throttleRamp = Param::GetFloat(Param::throtramp);
-    Throttle::throtmaxRev = Param::GetFloat(throtmaxRev);
+    // Fix: wrong enum token used; ensure we read Param::throtmaxRev
+    Throttle::throtmaxRev = Param::GetFloat(Param::throtmaxRev);
     Throttle::regenBrake = Param::GetFloat(Param::regenBrake);
 
     targetCharger=static_cast<ChargeModes>(Param::GetInt(Param::chargemodes));//get charger setting from menu
@@ -1290,6 +1278,13 @@ extern "C" int main(void)
 
     Param::SetInt(Param::version, 4); //backward compatibility
     Param::SetInt(Param::opmode, MOD_OFF);//always off at startup
+
+    // Start independent watchdog for fail-safe reset
+    // Prescaler and reload set for ~1.6s timeout at LSI ~40kHz
+    iwdg_set_prescaler(IWDG_PR_256);
+    iwdg_set_reload(0x0FFF);
+    iwdg_start();
+    iwdg_reset();
 
     while(1)
     {

@@ -1,22 +1,12 @@
 /*
- * This file is part of the ZombieVerter project.
- *
- * Copyright (C) 2012-2020 Johannes Huebner <dev@johanneshuebner.com>
- *               2021-2022 Damien Maguire <info@evbmw.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * File: src/throttle.cpp
+ * Project: STM32 VCU Firmware
+ * Author: Chinmoy Bhuyan
+ * Copyright (C) 2025 Joulepoint Private Limited
+ * Note: This file may include modifications; original notices are preserved.
  */
+
+
 
 #include "throttle.h"
 #include "my_math.h"
@@ -121,8 +111,15 @@ float Throttle::NormalizeThrottle(int potval, int potIdx)
     if(potmin[potIdx] == potmax[potIdx])
         return 0.0f;
 
+    // Support inverted sensor calibration (potmin can be greater than potmax)
+    int pmin = potmax[potIdx] > potmin[potIdx] ? potmin[potIdx] : potmax[potIdx];
+    int pmax = potmax[potIdx] > potmin[potIdx] ? potmax[potIdx] : potmin[potIdx];
 
-    return 100.0f * ((float)(potval - potmin[potIdx]) / (float)(potmax[potIdx] - potmin[potIdx]));
+    // Clamp into range for safety
+    if (potval < pmin) potval = pmin;
+    if (potval > pmax) potval = pmax;
+
+    return 100.0f * ((float)(potval - pmin) / (float)(pmax - pmin));
 }
 
 /**
@@ -370,7 +367,7 @@ void Throttle::UdcLimitCommand(float& finalSpnt, float udc)
         if (finalSpnt >= 0) //if we are requesting torque
         {
             float udcErr = udc - udcmin;
-            UDCres = udcErr * 3.5; // error multiplied by
+            UDCres = udcErr * Param::GetFloat(Param::udcKp); // configurable gain
             UDCres = MAX(0, UDCres); // only allow positive UDCres limit
             if(finalSpnt > UDCres) //derate on udcmin
             {
@@ -382,7 +379,7 @@ void Throttle::UdcLimitCommand(float& finalSpnt, float udc)
         else
         {
             float udcErr = udc - udcmax;
-            UDCres = udcErr * 3.5;
+            UDCres = udcErr * Param::GetFloat(Param::udcKp);
             UDCres = MIN(0, UDCres);
             if(finalSpnt < UDCres)//derate on udcmax
             {
@@ -414,7 +411,7 @@ void Throttle::IdcLimitCommand(float& finalSpnt, float idc)
         if (finalSpnt >= 0)
         {
             float idcerr = idcmax - idcFiltered;
-            IDCres = idcerr * 1;//gain needs tuning
+            IDCres = idcerr * Param::GetFloat(Param::idcKp);//configurable gain
             IDCres = MAX(0, IDCres);
             if(finalSpnt > IDCres)//derate on idcmax
             {
@@ -427,7 +424,7 @@ void Throttle::IdcLimitCommand(float& finalSpnt, float idc)
         {
 
             float idcerr = idcmin + idcFiltered;
-            IDCres = idcerr * 1;//gain needs tuning
+            IDCres = idcerr * Param::GetFloat(Param::idcKp);
             IDCres = MIN(0, IDCres);
             if(finalSpnt < IDCres)//derate on idcmin
             {

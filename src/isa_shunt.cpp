@@ -1,3 +1,11 @@
+/*
+ * File: src/isa_shunt.cpp
+ * Project: STM32 VCU Firmware
+ * Author: Chinmoy Bhuyan
+ * Copyright (C) 2025 Joulepoint Private Limited
+ * Note: This file may include modifications; original notices are preserved.
+ */
+
 /* 
  * This library supports ISA Scale IVT Modular current/voltage sensor device.
  * These devices measure current, up to three voltages, and provide temperature
