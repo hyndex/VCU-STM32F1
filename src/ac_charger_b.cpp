@@ -1,5 +1,5 @@
 /*
- * File: src/NissanPDM.cpp
+ * File: src/ac_charger_b.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include "NissanPDM.h"
+#include "ac_charger_b.h"
 #include "my_fp.h"
 #include "my_math.h"
 #include "stm32_can.h"
@@ -62,7 +62,7 @@ QC CAN----------------------PDM EV CAN
 
 */
 
-void NissanPDM::SetCanInterface(CanHardware* c)
+void AcChargerB::SetCanInterface(CanHardware* c)
 {
     NissLeafMng::SetCanInterface(c);//set Leaf VCM messages on same bus as PDM
     can = c;
@@ -70,7 +70,7 @@ void NissanPDM::SetCanInterface(CanHardware* c)
     can->RegisterUserMessage(0x390);//Leaf obc msg
 }
 
-void NissanPDM::DecodeCAN(int id, uint32_t data[2])
+void AcChargerB::DecodeCAN(int id, uint32_t data[2])
 {
     uint8_t* bytes = (uint8_t*)data;// arrgghhh this converts the two 32bit array into bytes. See comments are useful:)
 
@@ -108,7 +108,7 @@ void NissanPDM::DecodeCAN(int id, uint32_t data[2])
     }
 }
 
-bool NissanPDM::ControlCharge(bool RunCh, bool ACReq) //Modeled off of Outlander Charger
+bool AcChargerB::ControlCharge(bool RunCh, bool ACReq) //Modeled off of Outlander Charger
 {
     bool dummy=RunCh;
     dummy=dummy;
@@ -178,7 +178,7 @@ bool NissanPDM::ControlCharge(bool RunCh, bool ACReq) //Modeled off of Outlander
 }
 
 
-void NissanPDM::Task10Ms()
+void AcChargerB::Task10Ms()
 {
     int opmode = Param::GetInt(Param::opmode);
 
@@ -188,7 +188,7 @@ void NissanPDM::Task10Ms()
     }
 }
 
-void NissanPDM::Task100Ms()
+void AcChargerB::Task100Ms()
 {
     if(Param::GetInt(Param::Inverter) != InvModes::Leaf_Gen1)//only run 100ms VCM task if leaf inverter not used
     {
@@ -199,7 +199,7 @@ void NissanPDM::Task100Ms()
 }
 
 
-int8_t NissanPDM::fahrenheit_to_celsius(uint16_t fahrenheit)
+int8_t AcChargerB::fahrenheit_to_celsius(uint16_t fahrenheit)
 {
     int16_t result = ((int16_t)fahrenheit - 32) * 5 / 9;
     if(result < -128)

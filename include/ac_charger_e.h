@@ -1,5 +1,5 @@
 /*
- * File: include/ElconCharger.h
+ * File: include/ac_charger_e.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,8 +8,8 @@
 
 
 
-#ifndef ElconCharger_h
-#define ElconCharger_h
+#ifndef AC_CHARGER_E_H
+#define AC_CHARGER_E_H
 
 /*  This library supports the various Elcon charger protocol based chargers */
 
@@ -19,7 +19,7 @@
 #include "chargerhw.h"
 #include "my_math.h"
 
-class ElconCharger: public Chargerhw
+class AcChargerE: public Chargerhw
 {
 
 public:
@@ -37,4 +37,4 @@ private:
 
 };
 
-#endif /* ElconCharger_h */
+#endif /* AC_CHARGER_E_H */

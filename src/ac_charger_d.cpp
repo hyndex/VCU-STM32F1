@@ -1,5 +1,5 @@
 /*
- * File: src/outlanderCharger.cpp
+ * File: src/AcChargerD.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,25 +8,25 @@
 
 
 
-#include <outlanderCharger.h>
+#include "ac_charger_d.h"
 #include "OutlanderHeartBeat.h"
 
 /* Control of the Mitsubishi Outlander PHEV on board charger (OBC) and DCDC Converter. */
 
-uint8_t outlanderCharger::chgStatus;
-uint8_t outlanderCharger::evseDuty;
-float   outlanderCharger::dcBusV;
-float   outlanderCharger::temp_1;
-float   outlanderCharger::temp_2;
-float   outlanderCharger::ACVolts;
-float   outlanderCharger::ACAmps;
-float   outlanderCharger::DCAmps;
-float   outlanderCharger::LV_Volts;
-float   outlanderCharger::LV_Amps;
-uint16_t outlanderCharger::batteryVolts;
+uint8_t AcChargerD::chgStatus;
+uint8_t AcChargerD::evseDuty;
+float   AcChargerD::dcBusV;
+float   AcChargerD::temp_1;
+float   AcChargerD::temp_2;
+float   AcChargerD::ACVolts;
+float   AcChargerD::ACAmps;
+float   AcChargerD::DCAmps;
+float   AcChargerD::LV_Volts;
+float   AcChargerD::LV_Amps;
+uint16_t AcChargerD::batteryVolts;
 
 
-bool outlanderCharger::ControlCharge(bool RunCh, bool ACReq)
+bool AcChargerD::ControlCharge(bool RunCh, bool ACReq)
 {
     int chgmode = Param::GetInt(Param::interface);
     switch(chgmode)
@@ -103,7 +103,7 @@ bool outlanderCharger::ControlCharge(bool RunCh, bool ACReq)
 }
 
 
-void outlanderCharger::SetCanInterface(CanHardware* c)
+void AcChargerD::SetCanInterface(CanHardware* c)
 {
     OutlanderHeartBeat::SetCanInterface(c);//set Outlander Heartbeat on same CAN
 
@@ -113,23 +113,23 @@ void outlanderCharger::SetCanInterface(CanHardware* c)
     can->RegisterUserMessage(0x38A);//charger status 2
 }
 
-void outlanderCharger::DecodeCAN(int id, uint32_t data[2])
+void AcChargerD::DecodeCAN(int id, uint32_t data[2])
 {
     switch (id)
     {
     case 0x377:
-        outlanderCharger::handle377(data);
+        AcChargerD::handle377(data);
         break;
     case 0x389:
-        outlanderCharger::handle389(data);
+        AcChargerD::handle389(data);
         break;
     case 0x38A:
-        outlanderCharger::handle38A(data);
+        AcChargerD::handle38A(data);
         break;
     }
 }
 
-void outlanderCharger::Task100Ms()
+void AcChargerD::Task100Ms()
 {
     int opmode = Param::GetInt(Param::opmode);
     if(opmode==MOD_CHARGE)
@@ -201,7 +201,7 @@ void outlanderCharger::Task100Ms()
     }
 }
 
-void outlanderCharger::handle377(uint32_t data[2])
+void AcChargerD::handle377(uint32_t data[2])
 
 {
     uint8_t* bytes = (uint8_t*)data;// arrgghhh this converts the two 32bit array into bytes. See comments are useful:)
@@ -212,7 +212,7 @@ void outlanderCharger::handle377(uint32_t data[2])
 
 }
 
-void outlanderCharger::handle389(uint32_t data[2])
+void AcChargerD::handle389(uint32_t data[2])
 
 {
     uint8_t* bytes = (uint8_t*)data;// arrgghhh this converts the two 32bit array into bytes. See comments are useful:)
@@ -230,7 +230,7 @@ void outlanderCharger::handle389(uint32_t data[2])
     }
 }
 
-void outlanderCharger::handle38A(uint32_t data[2])
+void AcChargerD::handle38A(uint32_t data[2])
 
 {
     uint8_t* bytes = (uint8_t*)data;// arrgghhh this converts the two 32bit array into bytes. See comments are useful:)

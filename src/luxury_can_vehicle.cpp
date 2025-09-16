@@ -1,5 +1,5 @@
 /*
- * File: src/BMW_E65.cpp
+ * File: src/luxury_can_vehicle.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include <BMW_E65.h>
+#include "luxury_can_vehicle.h"
 #include "stm32_can.h"
 #include "params.h"
 #include "utils.h"
@@ -28,7 +28,7 @@ uint8_t BA6=0x80;//0x0BA second counter byte(byte 6)
 uint8_t AA1=0x00;//0x0AA First counter byte
 uint8_t engineLights = 0;
 
-void BMW_E65::SetCanInterface(CanHardware* c)
+void LuxuryCanVehicle::SetCanInterface(CanHardware* c)
 {
     can = c;
 
@@ -40,25 +40,25 @@ void BMW_E65::SetCanInterface(CanHardware* c)
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////Handle incomming pt can messages from the car here
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void BMW_E65::DecodeCAN(int id, uint32_t* data)
+void LuxuryCanVehicle::DecodeCAN(int id, uint32_t* data)
 {
 
     switch (id)
     {
     case 0x130:
-        BMW_E65::handle130(data);
+        LuxuryCanVehicle::handle130(data);
         break;
 
     case 0x1A0:
-        BMW_E65::handle1A0(data);
+        LuxuryCanVehicle::handle1A0(data);
         break;
 
     case 0x2FC:
-        BMW_E65::handle2FC(data);
+        LuxuryCanVehicle::handle2FC(data);
         break;
 
     case 0x480:
-        BMW_E65::handle480(data);
+        LuxuryCanVehicle::handle480(data);
         break;
 
     default:
@@ -66,7 +66,7 @@ void BMW_E65::DecodeCAN(int id, uint32_t* data)
     }
 }
 
-void BMW_E65::handle130(uint32_t data[2])
+void LuxuryCanVehicle::handle130(uint32_t data[2])
 {
     uint8_t* bytes = (uint8_t*)data;
     /*
@@ -117,7 +117,7 @@ void BMW_E65::handle130(uint32_t data[2])
     }
 }
 
-void BMW_E65::handle1A0(uint32_t data[2])
+void LuxuryCanVehicle::handle1A0(uint32_t data[2])
 {
     uint8_t* bytes = (uint8_t*)data;
 
@@ -125,7 +125,7 @@ void BMW_E65::handle1A0(uint32_t data[2])
     Param::SetFloat(Param::Veh_Speed, kph * 0.621371f);
 }
 
-void BMW_E65::handle2FC(uint32_t data[2])
+void LuxuryCanVehicle::handle2FC(uint32_t data[2])
 {
     uint8_t* bytes = (uint8_t*)data;
     if (bytes[0] == 0x84)//Locked
@@ -138,7 +138,7 @@ void BMW_E65::handle2FC(uint32_t data[2])
     }
 }
 
-void BMW_E65::handle480(uint32_t data[2])
+void LuxuryCanVehicle::handle480(uint32_t data[2])
 {
     uint8_t* bytes = (uint8_t*)data;
 
@@ -152,7 +152,7 @@ void BMW_E65::handle480(uint32_t data[2])
     }
 }
 
-void BMW_E65::Task10Ms()
+void LuxuryCanVehicle::Task10Ms()
 {
     if(CANWake)
     {
@@ -160,7 +160,7 @@ void BMW_E65::Task10Ms()
     }
 }
 
-void BMW_E65::Task100Ms()
+void LuxuryCanVehicle::Task100Ms()
 {
     if(CANWake)
     {
@@ -178,11 +178,11 @@ void BMW_E65::Task100Ms()
             this->dashInit=true;
         }
 
-        BMW_E65::Engine_Data();
+        LuxuryCanVehicle::Engine_Data();
     }
 }
 
-void BMW_E65::Task200Ms()
+void LuxuryCanVehicle::Task200Ms()
 {
     uint8_t bytes[8];
 
@@ -260,12 +260,12 @@ void BMW_E65::Task200Ms()
     }
 }
 
-void BMW_E65::DashOff()
+void LuxuryCanVehicle::DashOff()
 {
     this->dashInit=false;
 }
 
-void BMW_E65::SendAbsDscMessages(bool Brake_In)
+void LuxuryCanVehicle::SendAbsDscMessages(bool Brake_In)
 {
 
 //////////send abs/dsc messages////////////////////////
@@ -378,7 +378,7 @@ void BMW_E65::SendAbsDscMessages(bool Brake_In)
 
 }
 
-void BMW_E65::Engine_Data()
+void LuxuryCanVehicle::Engine_Data()
 {
     uint8_t bytes[8];
 
@@ -431,7 +431,7 @@ void BMW_E65::Engine_Data()
 
 }
 
-void BMW_E65::SetFuelGauge(float level)
+void LuxuryCanVehicle::SetFuelGauge(float level)
 {
     int pot1 = 0;
     int pot2 = 0;

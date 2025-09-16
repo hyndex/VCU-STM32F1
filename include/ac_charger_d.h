@@ -1,5 +1,5 @@
 /*
- * File: include/outlanderCharger.h
+ * File: include/ac_charger_d.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,8 +8,8 @@
 
 
 
-#ifndef OUTLANDERCHARGER_H
-#define OUTLANDERCHARGER_H
+#ifndef AC_CHARGER_D_H
+#define AC_CHARGER_D_H
 
 /* Control of the Mitsubishi Outlander PHEV on board charger (OBC) and DCDC Converter. */
 
@@ -21,7 +21,7 @@
 #include "chargerhw.h"
 #include <libopencm3/stm32/timer.h>
 
-class outlanderCharger: public Chargerhw
+class AcChargerD: public Chargerhw
 {
 
 public:
@@ -47,4 +47,4 @@ static void handle389(uint32_t data[2]);
 static void handle38A(uint32_t data[2]);
 };
 
-#endif // OUTLANDERCHARGER_H
+#endif // AC_CHARGER_D_H

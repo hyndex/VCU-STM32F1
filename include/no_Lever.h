@@ -22,5 +22,4 @@ private:
 };
 
 
-#endif // F30_Lever_INCLUDED
-
+#endif // NO_LEVER_INCLUDED

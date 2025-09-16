@@ -1,5 +1,5 @@
 /*
- * File: include/V_Classic.h
+ * File: include/analog_can_vehicle.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,9 +8,14 @@
 
 
 
-#ifndef V_Classic_h
-#define V_Classic_h
+// Generic analog cluster vehicle implementation (previously BMW_E31)
 
+#ifndef ANALOG_CAN_VEHICLE_H
+#define ANALOG_CAN_VEHICLE_H
+
+/*  This module supports analog-instrument clusters driven via CAN and
+    provides EGS/DME message publishing for compatibility with legacy
+    drivetrains. */
 
 #include <stdint.h>
 #include "vehicle.h"
@@ -18,7 +23,7 @@
 #include "utils.h"
 #include "stm32_can.h"
 
-class V_Classic: public Vehicle
+class AnalogCanVehicle: public Vehicle
 {
 
 public:
@@ -28,15 +33,19 @@ public:
    void Task1Ms();
    void SetRevCounter(int s);
    void SetTemperatureGauge(float temp);
+   void DecodeCAN(int id, uint32_t* data);
    bool Ready();
    bool Start();
 
 
 private:
    uint16_t speed;
+   uint32_t timerPeriod;
+   bool timerIsRunning=false;
+   void EGSMsg43F(int8_t gear);
+   void EGSMsg43B();
 
 };
 
-#endif /* BMW_E31_h */
-
+#endif /* ANALOG_CAN_VEHICLE_H */
 

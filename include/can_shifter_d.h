@@ -1,5 +1,5 @@
 /*
- * File: include/E65_Lever.h
+ * File: include/can_shifter_d.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,13 +8,13 @@
 
 
 
-#ifndef E65_Lever_h
-#define E65_Lever_h
+#ifndef CAN_SHIFTER_D_H
+#define CAN_SHIFTER_D_H
 
 #include "shifter.h"
 
 
-class E65_Lever: public Shifter
+class CanShifterD: public Shifter
 {
 public:
 
@@ -30,6 +30,5 @@ private:
 };
 
 
-#endif // E65_Lever_INCLUDED
-
+#endif // CAN_SHIFTER_D_H
 

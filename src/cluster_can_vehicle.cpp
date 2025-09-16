@@ -1,5 +1,5 @@
 /*
- * File: src/BMW_E39.cpp
+ * File: src/cluster_can_vehicle.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include "BMW_E39.h"
+#include "cluster_can_vehicle.h"
 #include "stm32_can.h"
 #include "utils.h"
 #include "digio.h"
@@ -21,7 +21,7 @@ static uint16_t tempValue = 0;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void BMW_E39::Task10Ms()
+void ClusterCanVehicle::Task10Ms()
 {
     if(SendCAN == true)
     {
@@ -35,7 +35,7 @@ void BMW_E39::Task10Ms()
     }
 }
 
-void BMW_E39::Task100Ms()
+void ClusterCanVehicle::Task100Ms()
 {
     if(AbsCANalive == true || DigIo::t15_digi.Get())//check if 100ms if ABS can frame 0x1F3 has been recieved to say CAN is on
     {
@@ -48,7 +48,7 @@ void BMW_E39::Task100Ms()
     AbsCANalive = false; //reset flag for next check
 }
 
-void BMW_E39::SetCanInterface(CanHardware* c)
+void ClusterCanVehicle::SetCanInterface(CanHardware* c)
 {
     can = c;
 
@@ -56,17 +56,17 @@ void BMW_E39::SetCanInterface(CanHardware* c)
     can->RegisterUserMessage(0x1F3);//E39/E46 ASC3 message
 }
 
-void BMW_E39::SetTemperatureGauge(float temp)
+void ClusterCanVehicle::SetTemperatureGauge(float temp)
 {
     tempValue = utils::change(temp,15,80,88,254); //Map to e39 temp gauge
 }
 
-bool BMW_E39::Ready()
+bool ClusterCanVehicle::Ready()
 {
     return DigIo::t15_digi.Get();
 }
 
-bool BMW_E39::Start()
+bool ClusterCanVehicle::Start()
 {
     return Param::GetBool(Param::din_start);
 }
@@ -74,7 +74,7 @@ bool BMW_E39::Start()
 //Based on an MS43 DME
 
 //////////////////////DME Messages //////////////////////////////////////////////////////////
-void BMW_E39::Msg316()  //DME1
+void ClusterCanVehicle::Msg316()  //DME1
 {
     uint16_t speed_input = speed;
     // Limit tachometer range from 750 RPMs - 7000 RPMs at max.
@@ -135,7 +135,7 @@ void BMW_E39::Msg316()  //DME1
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void BMW_E39::Msg329()   //DME2
+void ClusterCanVehicle::Msg329()   //DME2
 {
     //********************temp sense  *******************************
     //  tempValue=analogRead(tempIN); //read Analog pin voltage
@@ -224,7 +224,7 @@ void BMW_E39::Msg329()   //DME2
     can->Send(0x329, bytes, 8); //Send on CAN2
 }
 
-void BMW_E39::Msg43B()  //EGS1
+void ClusterCanVehicle::Msg43B()  //EGS1
 {
 
     uint8_t bytes[3];
@@ -236,7 +236,7 @@ void BMW_E39::Msg43B()  //EGS1
     can->Send(0x43B, (uint32_t*)bytes,3);
 }
 
-void BMW_E39::Msg545()  //DME4
+void ClusterCanVehicle::Msg545()  //DME4
 {
     // int z = 0x60; // + y;  higher value lower MPG
 
@@ -302,7 +302,7 @@ void BMW_E39::Msg545()  //DME4
     can->Send(0x545, bytes, 8); //Send on CAN2
 }
 
-void BMW_E39::Msg43F(int8_t gear)
+void ClusterCanVehicle::Msg43F(int8_t gear)
 {
     //Can bus data packet values to be sent
     uint8_t bytes[8];
@@ -362,7 +362,7 @@ void BMW_E39::Msg43F(int8_t gear)
     can->Send(0x43F, bytes, 8);
 }
 
-void BMW_E39::DecodeCAN(int id, uint32_t* data)
+void ClusterCanVehicle::DecodeCAN(int id, uint32_t* data)
 {
     //ASC1 message data 0x153
     /*
@@ -434,4 +434,3 @@ void BMW_E39::DecodeCAN(int id, uint32_t* data)
         AbsCANalive = true;
     }
 }
-

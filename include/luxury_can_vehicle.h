@@ -1,5 +1,5 @@
 /*
- * File: include/BMW_E65.h
+ * File: include/luxury_can_vehicle.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,22 +8,22 @@
 
 
 
-#ifndef BMW_E65_h
-#define BMW_E65_h
+// Premium/luxury CAN-driven cluster profile (previously BMW_E65)
 
-/*  This library supports the Powertrain CAN messages for the BMW E65 for driving dash gauges, putting out malf lights etc
-    Also reads gear lever, brake lights etc
+#ifndef LUXURY_CAN_VEHICLE_H
+#define LUXURY_CAN_VEHICLE_H
 
-*/
+/*  This module supports powertrain CAN messaging for large luxury
+    platforms, including cluster and gear selector handling. */
 
 #include <stdint.h>
 #include "vehicle.h"
 #include "my_math.h"
 
-class BMW_E65: public Vehicle
+class LuxuryCanVehicle: public Vehicle
 {
 public:
-   BMW_E65() : terminal15On(false), dashInit(false), gear(PARK) { }
+   LuxuryCanVehicle() : terminal15On(false), dashInit(false), gear(PARK) { }
    void SetCanInterface(CanHardware*);
    void Task10Ms();
    void Task100Ms();
@@ -38,7 +38,7 @@ public:
    void handle1A0(uint32_t data[2]);
    void handle2FC(uint32_t data[2]);
    void handle480(uint32_t data[2]);
-   void SetE90(bool e90) { isE90 = e90; }
+   void SetAlternateTrim(bool enable) { alternateTrim = enable; }
    void Engine_Data();
    void SetFuelGauge(float level);
 
@@ -54,8 +54,7 @@ private:
    float temperature;
    bool  CANWake;
    bool  StartButt;
-   bool isE90;
+   bool alternateTrim = false;
 };
 
-#endif /* BMW_E65_h */
-
+#endif /* LUXURY_CAN_VEHICLE_H */

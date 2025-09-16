@@ -1,5 +1,5 @@
 /*
- * File: src/JLR_G2.cpp
+ * File: src/CanShifterC.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include "JLR_G2.h"
+#include "can_shifter_c.h"
 
 uint8_t DirJLRG2 = 0;
 
@@ -43,14 +43,14 @@ const uint8_t byte5SG2[16] = {0xE2, 0x7F, 0xC5, 0x58, 0xAC, 0x31, 0x8B, 0x16, 0x
 
 
 
-void JLR_G2::SetCanInterface(CanHardware* c)
+void CanShifterC::SetCanInterface(CanHardware* c)
 {
     can = c;
     can->RegisterUserMessage(0x0E0);//JLR Gen 2 Gearshifter bytessage
 }
 
 
-void JLR_G2::DecodeCAN(int id, uint32_t* data)
+void CanShifterC::DecodeCAN(int id, uint32_t* data)
 {
     uint8_t* bytes = (uint8_t*)data;
     if (id == 0x0E0)
@@ -61,7 +61,7 @@ void JLR_G2::DecodeCAN(int id, uint32_t* data)
 
 }
 
-void JLR_G2::sendcan()
+void CanShifterC::sendcan()
 {
     uint8_t bytes[8];
 //-1=Reverse, 0=Neutral, 1=Forward , 2=Park
@@ -158,7 +158,7 @@ void LowerKnob()
     KnobPosDes = Lower;
 }
 
-void JLR_G2::Task10Ms()
+void CanShifterC::Task10Ms()
 {
     if(ShtdwnCnt2 < 20)
     {
@@ -172,7 +172,7 @@ void JLR_G2::Task10Ms()
 }
 
 
-void JLR_G2::Task100Ms()
+void CanShifterC::Task100Ms()
 {
     if(Param::GetInt(Param::opmode)==MOD_RUN)
     {
@@ -194,7 +194,7 @@ void JLR_G2::Task100Ms()
     }
 }
 
-bool JLR_G2::GetGear(Shifter::Sgear& outGear)
+bool CanShifterC::GetGear(Shifter::Sgear& outGear)
 {
     outGear = gear;    //send the shifter pos
     return true; //Let caller know we set a valid gear

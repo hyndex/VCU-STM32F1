@@ -1,5 +1,5 @@
 /*
- * File: include/JLR_G2.h
+ * File: include/can_shifter_c.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,12 +8,12 @@
 
 
 
-#ifndef JLR_G2_h
-#define JLR_G2_h
+#ifndef CAN_SHIFTER_C_H
+#define CAN_SHIFTER_C_H
 
 #include "shifter.h"
 
-class JLR_G2: public Shifter
+class CanShifterC: public Shifter
 {
 public:
 
@@ -30,6 +30,5 @@ private:
 };
 
 
-#endif // F30_Lever_INCLUDED
-
+#endif // CAN_SHIFTER_C_H
 

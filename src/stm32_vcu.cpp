@@ -32,16 +32,16 @@
 #include "cansdo.h"
 #include "leafinv.h"
 #include "isa_shunt.h"
-#include "BMW_E39.h"
-#include "BMW_E65.h"
-#include "subaruvehicle.h"
+#include "cluster_can_vehicle.h"
+#include "luxury_can_vehicle.h"
+#include "awd_can_vehicle.h"
 #include "Can_OI.h"
 #include "outlanderinverter.h"
-#include "Can_VAG.h"
+#include "multi_can_vehicle.h"
 #include "GS450H.h"
 #include "throttle.h"
 #include "utils.h"
-#include "teslaCharger.h"
+#include "ac_charger_c.h"
 #include "i3LIM.h"
 #include "CANSPI.h"
 #include "chademo.h"
@@ -55,38 +55,38 @@
 #include "iomatrix.h"
 #include "bmw_sbox.h"
 #include "vag_sbox.h"
-#include "NissanPDM.h"
+#include "ac_charger_b.h"
 #include "chargerint.h"
 #include "notused.h"
 #include "nocharger.h"
 #include "extCharger.h"
-#include "amperacharger.h"
+#include "ac_charger_a.h"
 #include "noHeater.h"
 #include "bms.h"
 #include "simpbms.h"
 #include "leafbms.h"
 #include "daisychainbms.h"
-#include "outlanderCharger.h"
+#include "ac_charger_d.h"
 #include "Can_OBD2.h"
 #include "dcdc.h"
 #include "TeslaDCDC.h"
-#include "BMW_E31.h"
+#include "analog_can_vehicle.h"
 #include "shifter.h"
 #include "digipot.h"
-#include "F30_Lever.h"
-#include "E65_Lever.h"
-#include "JLR_G1.h"
-#include "JLR_G2.h"
+#include "can_shifter_a.h"
+#include "can_shifter_d.h"
+#include "can_shifter_b.h"
+#include "can_shifter_c.h"
 #include "no_Lever.h"
 #include "CPC.h"
 #include "Foccci.h"
 #include "NoInverter.h"
 #include "linbus.h"
 #include "VWheater.h"
-#include "ElconCharger.h"
+#include "ac_charger_e.h"
 #include "rearoutlanderinverter.h"
 #include "NoVehicle.h"
-#include "V_Classic.h"
+#include "classic_io_vehicle.h"
 #include "kangoobms.h"
 #include "OutlanderCanHeater.h"
 #include "OutlanderHeartBeat.h"
@@ -94,6 +94,22 @@
 #define PRECHARGE_TIMEOUT 5  //5s
 
 #define PRINT_JSON 0
+
+#ifndef IWDG_PR_256
+#define IWDG_PR_256 IWDG_PR_DIV256
+#endif
+
+static inline void legacy_iwdg_set_prescaler(uint32_t prescaler)
+{
+    IWDG_KR = IWDG_KR_UNLOCK;
+    IWDG_PR = prescaler;
+}
+
+static inline void legacy_iwdg_set_reload(uint16_t reload)
+{
+    IWDG_KR = IWDG_KR_UNLOCK;
+    IWDG_RLR = reload;
+}
 
 
 extern "C" void __cxa_pure_virtual()
@@ -129,21 +145,21 @@ alarm=0;			// != 0 when alarm is pending
 static uint16_t rlyDly=25;
 
 // Instantiate Classes
-static BMW_E31 e31Vehicle;
-static BMW_E65 e65Vehicle;
-static BMW_E39 e39Vehicle;
-static Can_VAG vagVehicle;
-static SubaruVehicle subaruVehicle;
+static AnalogCanVehicle analogCanVehicle;
+static LuxuryCanVehicle luxuryCanVehicle;
+static ClusterCanVehicle clusterCanVehicle;
+static MultiCanVehicle multiCanVehicle;
+static AwdCanVehicle awdCanVehicle;
 static GS450HClass gs450Inverter;
 static LeafINV leafInv;
-static NissanPDM chargerPDM;
-static teslaCharger ChargerTesla;
-static ElconCharger ChargerElcon;
+static AcChargerB chargerPDM;
+static AcChargerC ChargerTesla;
+static AcChargerE ChargerElcon;
 static notused UnUsed;
 static noCharger nochg;
 static extCharger chgdigi;
-static amperaCharger ampChg;
-static outlanderCharger outChg;
+static AcChargerA ampChg;
+static AcChargerD outChg;
 static FCChademo chademoFC;
 static i3LIMClass LIMFC;
 static CPCClass CPCcan;
@@ -155,15 +171,15 @@ static noHeater Heaternone;
 static AmperaHeater amperaHeater;
 static OutlanderCanHeater outlanderCanHeater;
 static no_Lever NoGearLever;
-static F30_Lever F30GearLever;
-static E65_Lever E65GearLever;
-static JLR_G1 JLRG1shift;
-static JLR_G2 JLRG2shift;
+static CanShifterA shifterProfileA;
+static CanShifterD shifterProfileD;
+static CanShifterB shifterProfileB;
+static CanShifterC shifterProfileC;
 static vwHeater heaterVW;
-static NoVehicle VehicleNone;
-static V_Classic classVehicle;
+static NoVehicle noVehicleProfile;
+static ClassicIoVehicle classicVehicle;
 static Inverter* selectedInverter = &openInv;
-static Vehicle* selectedVehicle = &VehicleNone;
+static Vehicle* selectedVehicle = &noVehicleProfile;
 static Heater* selectedHeater = &Heaternone;
 static Chargerhw* selectedCharger = &chargerPDM;
 static Chargerint* selectedChargeInt = &UnUsed;
@@ -565,7 +581,7 @@ static void Ms10Task(void)
     {
         selectedCharger->Task10Ms();
     }
-    else if (Param::GetInt(Param::chargemodes) == ChargeModes::Leaf_PDM)
+    else if (Param::GetInt(Param::chargemodes) == ChargeModes::AcChargerModeB)
     {
         selectedCharger->Task10Ms();
     }
@@ -764,31 +780,31 @@ static void UpdateVehicle()
 {
     switch (Param::GetInt(Param::Vehicle))
     {
-    case vehicles::None:
-        selectedVehicle = &VehicleNone;
+    case vehicles::VehicleNone:
+        selectedVehicle = &noVehicleProfile;
         break;
-    case vehicles::vBMW_E39:
-        selectedVehicle = &e39Vehicle;
-        e39Vehicle.SetE46(false);
+    case vehicles::VehicleCluster:
+        selectedVehicle = &clusterCanVehicle;
+        clusterCanVehicle.SetAlternateCluster(false);
         break;
-    case vehicles::vBMW_E46:
-        selectedVehicle = &e39Vehicle;
-        e39Vehicle.SetE46(true);
+    case vehicles::VehicleClusterAlt:
+        selectedVehicle = &clusterCanVehicle;
+        clusterCanVehicle.SetAlternateCluster(true);
         break;
-    case vehicles::vBMW_E65:
-        selectedVehicle = &e65Vehicle;
+    case vehicles::VehicleLuxuryCan:
+        selectedVehicle = &luxuryCanVehicle;
         break;
-    case vehicles::vVAG:
-        selectedVehicle = &vagVehicle;
+    case vehicles::VehicleMultiCan:
+        selectedVehicle = &multiCanVehicle;
         break;
-    case vehicles::vSUBARU:
-        selectedVehicle = &subaruVehicle;
+    case vehicles::VehicleAwdCan:
+        selectedVehicle = &awdCanVehicle;
         break;
-    case vehicles::vBMW_E31:
-        selectedVehicle = &e31Vehicle;
+    case vehicles::VehicleAnalogCan:
+        selectedVehicle = &analogCanVehicle;
         break;
-    case vehicles::Classic:
-        selectedVehicle = &classVehicle;
+    case vehicles::VehicleClassicIo:
+        selectedVehicle = &classicVehicle;
         break;
     }
     //This will call SetCanFilters() via the Clear Callback
@@ -805,23 +821,23 @@ static void UpdateCharger()
         chargeMode = false;
         selectedCharger = &nochg;
         break;
-    case ChargeModes::EXT_DIGI:
+    case ChargeModes::ExternalDigital:
         selectedCharger = &chgdigi;
         break;
-    case ChargeModes::Volt_Ampera:
+    case ChargeModes::AcChargerModeA:
         selectedCharger = &ampChg;
         break;
-    case ChargeModes::Leaf_PDM:
+    case ChargeModes::AcChargerModeB:
         selectedCharger = &chargerPDM;
         break;
-    case ChargeModes::TeslaOI:
+    case ChargeModes::AcChargerModeC:
         selectedCharger = &ChargerTesla;
         break;
-    case ChargeModes::Out_lander:
+    case ChargeModes::AcChargerModeD:
         selectedCharger = &outChg;
         OutlanderCAN = true;
         break;
-    case ChargeModes::Elcon:
+    case ChargeModes::AcChargerModeE:
         selectedCharger = &ChargerElcon;
         break;
 
@@ -943,20 +959,20 @@ static void UpdateShifter()
         selectedShifter = &shifterNone;
         break;
 
-    case ShifterModes::BMWF30:
-        selectedShifter = &F30GearLever;
+    case ShifterModes::CanShifterModeA:
+        selectedShifter = &shifterProfileA;
         break;
 
-    case ShifterModes::JLRG1:
-        selectedShifter = &JLRG1shift;
+    case ShifterModes::CanShifterModeB:
+        selectedShifter = &shifterProfileB;
         break;
 
-    case ShifterModes::JLRG2:
-        selectedShifter = &JLRG2shift;
+    case ShifterModes::CanShifterModeC:
+        selectedShifter = &shifterProfileC;
         break;
 
-    case ShifterModes::BMWE65:
-        selectedShifter = &E65GearLever;
+    case ShifterModes::CanShifterModeD:
+        selectedShifter = &shifterProfileD;
         break;
 
     default:
@@ -1281,8 +1297,8 @@ extern "C" int main(void)
 
     // Start independent watchdog for fail-safe reset
     // Prescaler and reload set for ~1.6s timeout at LSI ~40kHz
-    iwdg_set_prescaler(IWDG_PR_256);
-    iwdg_set_reload(0x0FFF);
+    legacy_iwdg_set_prescaler(IWDG_PR_256);
+    legacy_iwdg_set_reload(0x0FFF);
     iwdg_start();
     iwdg_reset();
 

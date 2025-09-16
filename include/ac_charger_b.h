@@ -1,5 +1,5 @@
 /*
- * File: include/NissanPDM.h
+ * File: include/ac_charger_b.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,14 +8,14 @@
 
 
 
-#ifndef NISSANPDM_H
-#define NISSANPDM_H
+#ifndef AC_CHARGER_B_H
+#define AC_CHARGER_B_H
 
 #include <stdint.h>
 #include "my_fp.h"
 #include "chargerhw.h"
 
-class NissanPDM: public Chargerhw
+class AcChargerB: public Chargerhw
 {
 public:
    void DecodeCAN(int id, uint32_t data[2]);
@@ -42,5 +42,4 @@ private:
 //   int16_t final_torque_request;
 };
 
-#endif // NISSANPDM_H
-
+#endif // AC_CHARGER_B_H

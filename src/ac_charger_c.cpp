@@ -1,5 +1,5 @@
 /*
- * File: src/teslaCharger.cpp
+ * File: src/AcChargerC.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include "teslaCharger.h"
+#include "ac_charger_c.h"
 #include "params.h"
 #include "my_math.h"
 
@@ -21,13 +21,13 @@ static uint16_t HVpwr=0;
 static uint16_t calcBMSpwr=0;
 
 
-void teslaCharger::SetCanInterface(CanHardware* c)
+void AcChargerC::SetCanInterface(CanHardware* c)
 {
    can = c;
    can->RegisterUserMessage(0x108);
 }
 
-void teslaCharger::DecodeCAN(int id, uint32_t data[2])
+void AcChargerC::DecodeCAN(int id, uint32_t data[2])
 {
    uint8_t* bytes = (uint8_t*)data;
    if (id == 0x108)
@@ -37,7 +37,7 @@ void teslaCharger::DecodeCAN(int id, uint32_t data[2])
    }
 }
 
-void teslaCharger::Task100Ms()
+void AcChargerC::Task100Ms()
 {
    uint8_t bytes[8];
    HVvolts=Param::GetInt(Param::udc);
@@ -59,7 +59,7 @@ void teslaCharger::Task100Ms()
    can->Send(0x109, (uint32_t*)bytes,8);
 }
 
-bool teslaCharger::ControlCharge(bool RunCh, bool ACReq)
+bool AcChargerC::ControlCharge(bool RunCh, bool ACReq)
 {
    bool dummy = RunCh;
    dummy = dummy;

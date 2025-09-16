@@ -1,5 +1,5 @@
 /*
- * File: include/teslaCharger.h
+ * File: include/ac_charger_c.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,8 +8,8 @@
 
 
 
-#ifndef TESLACHARGER_H
-#define TESLACHARGER_H
+#ifndef AC_CHARGER_C_H
+#define AC_CHARGER_C_H
 
 /*  This library supports the various opensource tesla charger controllers e.g. PCS , Gen2/3 etc. */
 
@@ -17,7 +17,7 @@
 #include "canhardware.h"
 #include <stdint.h>
 
-class teslaCharger: public Chargerhw
+class AcChargerC: public Chargerhw
 {
 public:
     void DecodeCAN(int id, uint32_t data[2]) override;
@@ -26,4 +26,4 @@ public:
     void SetCanInterface(CanHardware* c) override;
 };
 
-#endif /* TESLACHARGER_H */
+#endif /* AC_CHARGER_C_H */

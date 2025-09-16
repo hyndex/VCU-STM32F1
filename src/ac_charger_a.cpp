@@ -1,5 +1,5 @@
 /*
- * File: src/amperacharger.cpp
+ * File: src/ac_charger_a.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,10 +8,10 @@
 
 
 
-#include "amperacharger.h"
+#include "ac_charger_a.h"
 
 
-bool amperaCharger::ControlCharge(bool RunCh, bool ACReq)
+bool AcChargerA::ControlCharge(bool RunCh, bool ACReq)
 {
 if(ACReq)
 {

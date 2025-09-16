@@ -1,5 +1,5 @@
 /*
- * File: include/F30_Lever.h
+ * File: include/can_shifter_a.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,15 +8,15 @@
 
 
 
-#ifndef F30_Lever_h
-#define F30_Lever_h
+#ifndef CAN_SHIFTER_A_H
+#define CAN_SHIFTER_A_H
 
 #include "shifter.h"
 #define POLYNOMIAL 0x1D /* CRC8_CCITT -- this polynomial needs to match choice on javascript end */
 #define WIDTH (8 * sizeof(uint8_t))
 #define TOPBIT (1 << (WIDTH - 1))
 
-class F30_Lever: public Shifter
+class CanShifterA: public Shifter
 {
 public:
 
@@ -37,6 +37,5 @@ private:
 };
 
 
-#endif // F30_Lever_INCLUDED
-
+#endif // CAN_SHIFTER_A_H
 

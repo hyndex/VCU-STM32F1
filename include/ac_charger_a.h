@@ -1,5 +1,5 @@
 /*
- * File: include/amperacharger.h
+ * File: include/ac_charger_a.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,8 +8,8 @@
 
 
 
-#ifndef amperacharger_h
-#define amperacharger_h
+#ifndef AC_CHARGER_A_H
+#define AC_CHARGER_A_H
 
 /*  TODO: Add can info for control of Chevy Volt , Opel/Vauxhaul Ampera charger here. */
 
@@ -17,13 +17,12 @@
 #include "my_fp.h"
 #include "chargerhw.h"
 
-class amperaCharger: public Chargerhw
+class AcChargerA: public Chargerhw
 {
 public:
   bool ControlCharge(bool RunCh, bool ACreq);
 };
 
-#endif /* amperacharger_h */
-
+#endif /* AC_CHARGER_A_H */
 
 

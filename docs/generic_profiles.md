@@ -3,20 +3,20 @@ Generic Profiles Mapping
 This codebase exposes generic, de-branded names in the parameter UI while retaining the underlying, proven drivers. The table below documents the mapping so existing setups remain understandable.
 
 - VEHMODES
-  - Vehicle_A → BMW_E46 profile (src/BMW_E39.cpp with SetE46(true))
-  - Vehicle_B → BMW_E6x+ profile (src/BMW_E65.cpp)
-  - Vehicle_C → BMW_E39 profile (src/BMW_E39.cpp with SetE46(false))
-  - Vehicle_D → Mid-2000s VAG profile (src/Can_VAG.cpp)
-  - Vehicle_E → Subaru profile (src/subaruvehicle.cpp)
-  - Vehicle_F → BMW_E31 profile (src/BMW_E31.cpp)
-  - Classic → Classic analog/IO profile (src/V_Classic.cpp)
+  - Vehicle_A → Cluster CAN profile (src/cluster_can_vehicle.cpp with SetAlternateCluster(true))
+  - Vehicle_B → Luxury CAN profile (src/luxury_can_vehicle.cpp)
+  - Vehicle_C → Cluster CAN profile (src/cluster_can_vehicle.cpp with SetAlternateCluster(false))
+  - Vehicle_D → Multi-platform CAN profile (src/multi_can_vehicle.cpp)
+  - Vehicle_E → AWD CAN profile (src/awd_can_vehicle.cpp)
+  - Vehicle_F → Analog CAN profile (src/analog_can_vehicle.cpp)
+  - Classic → Classic analog/IO profile (src/classic_io_vehicle.cpp)
   - None → No vehicle integration
 
 - SHIFTERS
-  - Shifter_A → BMW_F30 (src/F30_Lever.cpp)
-  - Shifter_B → JLR_G1 (src/JLR_G1.cpp)
-  - Shifter_C → JLR_G2 (src/JLR_G2.cpp)
-  - Shifter_D → BMW_E65 (src/E65_Lever.cpp)
+  - Shifter_A → CAN shifter A (src/can_shifter_a.cpp)
+  - Shifter_B → CAN shifter B (src/can_shifter_b.cpp)
+  - Shifter_C → CAN shifter C (src/can_shifter_c.cpp)
+  - Shifter_D → CAN shifter D (src/can_shifter_d.cpp)
 
 - INVMODES
   - Inverter_A → Leaf_Gen1 (src/leafinv.cpp)
@@ -30,11 +30,11 @@ This codebase exposes generic, de-branded names in the parameter UI while retain
 
 - CHGMODS (On-board AC chargers)
   - External_Digital → extCharger (src/extCharger.cpp)
-  - Charger_A → Volt/Ampera (src/amperacharger.cpp)
-  - Charger_B → Leaf_PDM (src/NissanPDM.cpp)
-  - Charger_C → Tesla OI charger (src/teslaCharger.cpp)
-  - Charger_D → Outlander OBC (src/outlanderCharger.cpp)
-  - Charger_E → Elcon (src/ElconCharger.cpp)
+  - Charger_A → AC charger A (src/ac_charger_a.cpp)
+  - Charger_B → AC charger B (src/ac_charger_b.cpp)
+  - Charger_C → AC charger C (src/ac_charger_c.cpp)
+  - Charger_D → AC charger D (src/ac_charger_d.cpp)
+  - Charger_E → AC charger E (src/ac_charger_e.cpp)
 
 - CHGINT (DC fast charge interfaces)
   - DCFC_A → i3 LIM CCS (src/i3LIM.cpp)
@@ -50,13 +50,11 @@ This codebase exposes generic, de-branded names in the parameter UI while retain
 - SHNTYPE (Current/voltage measurement)
   - Shunt_A → ISA shunt (src/isa_shunt.cpp)
   - Shunt_B → BMW SBOX (src/bmw_sbox.cpp)
-  - Shunt_C → VAG measurement box (src/Can_VAG.cpp)
+  - Shunt_C → Multi-platform measurement box (src/multi_can_vehicle.cpp)
 
 - PINFUNCS update
   - TransPump label replaces GS450pump. Functionality unchanged; see utils::GS450hOilPump.
 
 Notes
-- Only parameter UI labels changed. No behavior or enumerations were altered.
+- Labels and source modules now share the same generic naming.
 - Existing configurations continue to work; only the display names differ.
-- If you want source-level renames (classes/files), we can phase that next.
-

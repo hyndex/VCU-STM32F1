@@ -1,5 +1,5 @@
 /*
- * File: src/Can_VAG.cpp
+ * File: src/multi_can_vehicle.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,10 +8,10 @@
 
 
 
-#include "Can_VAG.h"
+#include "multi_can_vehicle.h"
 #include "params.h"
 
-void Can_VAG::Task100Ms()
+void MultiCanVehicle::Task100Ms()
 {
    static int seqCtr = 0;
    static uint8_t ctr = 0;
@@ -29,7 +29,7 @@ void Can_VAG::Task100Ms()
    ctr = (ctr + 1) & 0xF;
 }
 
-void Can_VAG::Task10Ms()
+void MultiCanVehicle::Task10Ms()
 {
    rpm = (rpm < 750) ? 750 : rpm;
    rpm = (rpm > 7000) ? 7000 : rpm;
@@ -46,14 +46,14 @@ void Can_VAG::Task10Ms()
    can->Send(0x288, canData, 8); //Send on CAN2
 }
 
-bool Can_VAG::Start()
+bool MultiCanVehicle::Start()
 {
    //TODO the start signal can be found on CAN bus, use it!
    //return Param::GetBool(Param::din_start);
    return Param::GetBool(Param::din_start);
 }
 
-bool Can_VAG::Ready()
+bool MultiCanVehicle::Ready()
 {
    return DigIo::t15_digi.Get();
 }

@@ -1,5 +1,5 @@
 /*
- * File: include/Can_VAG.h
+ * File: include/multi_can_vehicle.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,12 +8,13 @@
 
 
 
-#ifndef Can_VAG_h
-#define Can_VAG_h
+// Generic mid-2000s CAN cluster support (previously Can_VAG)
 
-/*  This library supports the Powertrain CAN messages for VAG cars for driving dash gauges, putting out malf lights etc
+#ifndef MULTI_CAN_VEHICLE_H
+#define MULTI_CAN_VEHICLE_H
 
-*/
+/*  This module publishes powertrain CAN messages for miscellaneous CAN
+    gauge clusters. */
 
 #include <stdint.h>
 #include "my_fp.h"
@@ -21,7 +22,7 @@
 #include "vehicle.h"
 #include "digio.h"
 
-class Can_VAG: public Vehicle
+class MultiCanVehicle: public Vehicle
 {
 public:
    void Task10Ms();
@@ -35,4 +36,4 @@ private:
    uint16_t rpm;
 };
 
-#endif /* Can_VAG_h */
+#endif /* MULTI_CAN_VEHICLE_H */

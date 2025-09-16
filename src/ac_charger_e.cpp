@@ -1,5 +1,5 @@
 /*
- * File: src/ElconCharger.cpp
+ * File: src/AcChargerE.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include <ElconCharger.h>
+#include "ac_charger_e.h"
 
 static bool ChRun=false;
 static uint16_t HVvolts=0;
@@ -20,7 +20,7 @@ static uint16_t ChargerHVbatteryVolts =0;
 static uint16_t ChargerHVcurrent = 0;
 static uint8_t ChargerStatus = 0;
 
-void ElconCharger::SetCanInterface(CanHardware* c)
+void AcChargerE::SetCanInterface(CanHardware* c)
 {
     can = c;
 
@@ -28,12 +28,12 @@ void ElconCharger::SetCanInterface(CanHardware* c)
 
 }
 
-void ElconCharger::DecodeCAN(int id, uint32_t data[2])
+void AcChargerE::DecodeCAN(int id, uint32_t data[2])
 {
     switch (id)
     {
     case 0x18FF50E5:
-        ElconCharger::handle18FF50E5(data);
+        AcChargerE::handle18FF50E5(data);
         break;
 
     default:
@@ -41,7 +41,7 @@ void ElconCharger::DecodeCAN(int id, uint32_t data[2])
     }
 }
 
-void ElconCharger::handle18FF50E5(uint32_t data[2])
+void AcChargerE::handle18FF50E5(uint32_t data[2])
 {
     uint8_t* bytes = (uint8_t*)data;// arrgghhh this converts the two 32bit array into bytes.
     ChargerHVbatteryVolts = (bytes[0] * 256 + bytes[1]) * 0.1;
@@ -49,7 +49,7 @@ void ElconCharger::handle18FF50E5(uint32_t data[2])
     ChargerStatus = bytes[4];
 }
 
-void ElconCharger::Task200Ms()
+void AcChargerE::Task200Ms()
 {
     uint8_t bytes[8];
     if(ChRun == true)
@@ -87,7 +87,7 @@ void ElconCharger::Task200Ms()
 }
 
 
-bool ElconCharger::ControlCharge(bool RunCh, bool ACReq)
+bool AcChargerE::ControlCharge(bool RunCh, bool ACReq)
 {
     if(RunCh == true && ACReq == true)//check okay to keep charging, Elcon is dumb charger so no handling required here.
     {

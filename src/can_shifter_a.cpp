@@ -1,5 +1,5 @@
 /*
- * File: src/F30_Lever.cpp
+ * File: src/CanShifterA.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include "F30_Lever.h"
+#include "can_shifter_a.h"
 
 #define Off 0x00
 #define Park 0x20
@@ -36,7 +36,7 @@ uint8_t Cnt3FD = 0;
 uint16_t ShiftState = 0;
 
 
-void F30_Lever::CRC8_begin(void) {
+void CanShifterA::CRC8_begin(void) {
   uint8_t  remainder;
     for (int dividend = 0; dividend < 256; ++dividend)
     {
@@ -57,7 +57,7 @@ void F30_Lever::CRC8_begin(void) {
     }
 }
 
-uint8_t F30_Lever::get_crc8(uint8_t const message[], int nBytes, uint8_t final, uint8_t skip)
+uint8_t CanShifterA::get_crc8(uint8_t const message[], int nBytes, uint8_t final, uint8_t skip)
  {
    uint8_t data;
     uint8_t remainder = 0x00;
@@ -75,7 +75,7 @@ remainder = remainder^final;
 
 
 
- void F30_Lever::SetCanInterface(CanHardware* c)
+ void CanShifterA::SetCanInterface(CanHardware* c)
 {
    can = c;
    can->RegisterUserMessage(0x55E);//GWS Hearbeat msg
@@ -85,7 +85,7 @@ remainder = remainder^final;
 }
 
 
-void F30_Lever::DecodeCAN(int id, uint32_t* data)
+void CanShifterA::DecodeCAN(int id, uint32_t* data)
 {
    uint8_t* bytes = (uint8_t*)data;
    if (id == 0x197)
@@ -159,7 +159,7 @@ void F30_Lever::DecodeCAN(int id, uint32_t* data)
 
 }
 
-void F30_Lever::UpdateShifter() {
+void CanShifterA::UpdateShifter() {
 
   switch (Dir) {
     case Off:
@@ -242,7 +242,7 @@ void F30_Lever::UpdateShifter() {
 
 }
 
-void F30_Lever::sendcan() {
+void CanShifterA::sendcan() {
   uint8_t bytes[8];
  //-1=Reverse, 0=Neutral, 1=Forward , 2=Park
   if(vcuDir==0) DirOut=Neutral;
@@ -272,13 +272,13 @@ void F30_Lever::sendcan() {
 }
 
 
- void F30_Lever::Task10Ms()
+ void CanShifterA::Task10Ms()
  {
 
  }
 
 
- void F30_Lever::Task100Ms()
+ void CanShifterA::Task100Ms()
  {
 
     if(!Param::GetInt(Param::T15Stat))
@@ -299,7 +299,7 @@ void F30_Lever::sendcan() {
     if(opmodeSh==MOD_OFF) this->gear = NEUTRAL;
  }
 
- bool F30_Lever::GetGear(Shifter::Sgear& outGear)
+ bool CanShifterA::GetGear(Shifter::Sgear& outGear)
 {
    outGear = gear;    //send the shifter pos
    return true; //Let caller know we set a valid gear

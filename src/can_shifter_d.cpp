@@ -1,5 +1,5 @@
 /*
- * File: src/E65_Lever.cpp
+ * File: src/CanShifterD.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,19 +8,19 @@
 
 
 
-#include "E65_Lever.h"
+#include "can_shifter_d.h"
 
 static uint8_t shiftPos=0xe1; //contains byte to display gear position on dash.default to park
 static uint8_t gear_BA=0x03; //set to park as initial condition
 static int8_t opmodeSh = 0;
 
-void E65_Lever::SetCanInterface(CanHardware* c)
+void CanShifterD::SetCanInterface(CanHardware* c)
 {
     can = c;
     can->RegisterUserMessage(0x192);//GWS status msg. Contains info on buttons pressed and lever location.
 }
 
-void E65_Lever::DecodeCAN(int id, uint32_t* data)
+void CanShifterD::DecodeCAN(int id, uint32_t* data)
 {
     if (id == 0x192)
     {
@@ -57,19 +57,19 @@ void E65_Lever::DecodeCAN(int id, uint32_t* data)
 }
 
 
-void E65_Lever::Task10Ms()
+void CanShifterD::Task10Ms()
 {
 
 }
 
 
-void E65_Lever::Task100Ms()
+void CanShifterD::Task100Ms()
 {
     opmodeSh = Param::GetInt(Param::opmode);
     if(opmodeSh==MOD_OFF) this->gear = NEUTRAL;
 }
 
-bool E65_Lever::GetGear(Shifter::Sgear& outGear)
+bool CanShifterD::GetGear(Shifter::Sgear& outGear)
 {
     outGear = gear;    //send the shifter pos
     return true; //Let caller know we set a valid gear

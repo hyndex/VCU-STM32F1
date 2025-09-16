@@ -1,5 +1,5 @@
 /*
- * File: src/BMW_E31.cpp
+ * File: src/analog_can_vehicle.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include "BMW_E31.h"
+#include "analog_can_vehicle.h"
 #include "hwinit.h"
 #include "my_math.h"
 #include <libopencm3/stm32/timer.h>
@@ -23,7 +23,7 @@
 
 
 //We use this as an init function
-void BMW_E31::SetCanInterface(CanHardware* c)
+void AnalogCanVehicle::SetCanInterface(CanHardware* c)
 {
     can = c;
     utils::SpeedoStart();
@@ -31,7 +31,7 @@ void BMW_E31::SetCanInterface(CanHardware* c)
 }
 
 
-void BMW_E31::SetRevCounter(int speed)
+void AnalogCanVehicle::SetRevCounter(int speed)
 {
     uint16_t speed_input = speed;
     speed_input = MAX(750, speed_input);//
@@ -41,14 +41,14 @@ void BMW_E31::SetRevCounter(int speed)
 }
 
 
-void BMW_E31::SetTemperatureGauge(float temp)
+void AnalogCanVehicle::SetTemperatureGauge(float temp)
 {
     float dc = temp * 10; //TODO find right factor for value like 0..0.5 or so
     //Would like to use digi pots here
     dc = dc;
 }
 
-void BMW_E31::DecodeCAN(int id, uint32_t* data)
+void AnalogCanVehicle::DecodeCAN(int id, uint32_t* data)
 {
     uint8_t* bytes = (uint8_t*)data;//E31 CAN to be added here
 
@@ -64,7 +64,7 @@ void BMW_E31::DecodeCAN(int id, uint32_t* data)
     }
 }
 
-void BMW_E31::EGSMsg43B()  //EGS1
+void AnalogCanVehicle::EGSMsg43B()  //EGS1
 {
 
     uint8_t bytes[3];
@@ -76,7 +76,7 @@ void BMW_E31::EGSMsg43B()  //EGS1
     can->Send(0x43B, (uint32_t*)bytes,3);
 }
 
-void BMW_E31::EGSMsg43F(int8_t gear)
+void AnalogCanVehicle::EGSMsg43F(int8_t gear)
 {
     //Can bus data packet values to be sent
     uint8_t bytes[8];
@@ -136,14 +136,14 @@ void BMW_E31::EGSMsg43F(int8_t gear)
     can->Send(0x43F, bytes, 8);
 }
 
-void BMW_E31::Task1Ms()
+void AnalogCanVehicle::Task1Ms()
 {
 
 
 }
 
 
-void BMW_E31::Task10Ms()
+void AnalogCanVehicle::Task10Ms()
 {
     if(DigIo::t15_digi.Get() == 1)
     {
@@ -155,7 +155,7 @@ void BMW_E31::Task10Ms()
 }
 
 
-void BMW_E31::Task100Ms()
+void AnalogCanVehicle::Task100Ms()
 {
     if (!Param::GetInt(Param::T15Stat))
     {
@@ -164,12 +164,12 @@ void BMW_E31::Task100Ms()
 }
 
 
-bool BMW_E31::Ready()
+bool AnalogCanVehicle::Ready()
 {
     return DigIo::t15_digi.Get();
 }
 
-bool BMW_E31::Start()
+bool AnalogCanVehicle::Start()
 {
     return Param::GetBool(Param::din_start);
 }

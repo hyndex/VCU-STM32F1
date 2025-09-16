@@ -1,5 +1,5 @@
 /*
- * File: include/subaruvehicle.h
+ * File: include/awd_can_vehicle.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,17 +8,19 @@
 
 
 
-#ifndef SUBARUVEHICLE_H
-#define SUBARUVEHICLE_H
+// Generic AWD vehicle CAN implementation (previously SubaruVehicle)
+
+#ifndef AWD_CAN_VEHICLE_H
+#define AWD_CAN_VEHICLE_H
 
 #include <vehicle.h>
 #include "utils.h"
 
-class SubaruVehicle : public Vehicle
+class AwdCanVehicle : public Vehicle
 {
    public:
       /** Default constructor */
-      SubaruVehicle();
+      AwdCanVehicle();
       void SetCanInterface(CanHardware* c);
       bool GetGear(gear& gear);
       bool Ready() { return true; }
@@ -39,4 +41,4 @@ class SubaruVehicle : public Vehicle
       bool ccOn;
 };
 
-#endif // SUBARUVEHICLE_H
+#endif // AWD_CAN_VEHICLE_H

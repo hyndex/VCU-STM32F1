@@ -1,5 +1,5 @@
 /*
- * File: include/BMW_E39.h
+ * File: include/cluster_can_vehicle.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,18 +8,19 @@
 
 
 
-#ifndef BMW_E39_h
-#define BMW_E39_h
+// Generic cluster CAN driver (previously BMW_E39)
 
-/*  This library supports the Powertrain CAN messages for the BMW E39 for driving dash gauges, putting out malf lights etc
+#ifndef CLUSTER_CAN_VEHICLE_H
+#define CLUSTER_CAN_VEHICLE_H
 
-*/
+/*  This module publishes powertrain CAN messages suited for analog gauge
+    clusters. */
 
 #include <stdint.h>
 #include "vehicle.h"
 
 
-class BMW_E39: public Vehicle
+class ClusterCanVehicle: public Vehicle
 {
 
 public:
@@ -31,7 +32,7 @@ public:
    void DecodeCAN(int id, uint32_t* data);
    bool Ready();
    bool Start();
-   void SetE46(bool e46) { isE46 = e46; }
+   void SetAlternateCluster(bool useAlternateCluster) { alternateCluster = useAlternateCluster; }
 
 private:
    void Msg316();
@@ -41,10 +42,9 @@ private:
    void Msg43B();
 
    uint16_t speed;
-   bool isE46;
+   bool alternateCluster = false;
    bool AbsCANalive;
    bool SendCAN;
 };
 
-#endif /* Can_E39_h */
-
+#endif /* CLUSTER_CAN_VEHICLE_H */

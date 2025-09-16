@@ -16,7 +16,7 @@
    2. Temporary parameters (id = 0)
    3. Display values
  */
-//Next param id (increase when adding new parameter!): 144
+//Next param id (increase when adding new parameter!): 147
 /*              category     name         unit       min     max     default id */
 #define PARAM_LIST \
     PARAM_ENTRY(CAT_SETUP,     Inverter,     INVMODES, 0,      8,      0,      5  ) \
@@ -124,9 +124,9 @@
     PARAM_ENTRY(CAT_IOPINS,    PWM3Func,    PINFUNCS,  0,      18,     2,      87 ) \
     PARAM_ENTRY(CAT_IOPINS,    GP12VInFunc, PINFUNCS,  0,      13,     12,     98 ) \
     PARAM_ENTRY(CAT_IOPINS,    HVReqFunc,   PINFUNCS,  0,      13,     12,     99 ) \
-    PARAM_ENTRY(CAT_IOPINS,    PB1InFunc,   PINFUNCS,  0,      13,     12,     140 ) \
-    PARAM_ENTRY(CAT_IOPINS,    PB2InFunc,   PINFUNCS,  0,      13,     12,     141 ) \
-    PARAM_ENTRY(CAT_IOPINS,    PB3InFunc,   PINFUNCS,  0,      13,     12,     142 ) \
+    PARAM_ENTRY(CAT_IOPINS,    PB1InFunc,   PINFUNCS,  0,      13,     12,     144 ) \
+    PARAM_ENTRY(CAT_IOPINS,    PB2InFunc,   PINFUNCS,  0,      13,     12,     145 ) \
+    PARAM_ENTRY(CAT_IOPINS,    PB3InFunc,   PINFUNCS,  0,      13,     12,     146 ) \
     PARAM_ENTRY(CAT_IOPINS,    GPA1Func,    APINFUNCS, 0,      2,      0,      110 ) \
     PARAM_ENTRY(CAT_IOPINS,    GPA2Func,    APINFUNCS, 0,      2,      0,      111 ) \
     PARAM_ENTRY(CAT_IOPINS,    ppthresh,    "dig",     0,      4095,   2500,   114 ) \
@@ -261,7 +261,7 @@
 #define DIRMODES     "0=Button, 1=Switch, 2=ButtonReversed, 3=SwitchReversed, 4=DefaultForward"
 #define INVMODES     "0=None, 1=Inverter_A, 2=Inverter_B, 3=UserCAN, 4=OpenI, 5=Inverter_C, 6=Inverter_D, 7=Inverter_E, 8=Inverter_F"
 #define PLTMODES     "0=Absent, 1=ACStd, 2=ACchg, 3=Error, 4=CCS_Not_Rdy, 5=CCS_Rdy, 6=Static"
-#define VEHMODES     "0=Vehicle_A, 1=Vehicle_B, 2=Classic, 3=None, 5=Vehicle_C, 6=Vehicle_D, 7=Vehicle_E, 8=Vehicle_F"
+#define VEHMODES     "0=ClusterAlt, 1=LuxuryCan, 2=ClassicIo, 4=None, 5=Cluster, 6=MultiCan, 7=AwdCan, 8=AnalogCan"
 #define BMSMODES     "0=Off, 1=BMS_A, 2=DaisychainSingle, 3=DaisychainDual, 4=BMS_B, 5=BMS_C"
 #define OPMODES      "0=Off, 1=Run, 2=Precharge, 3=PchFail, 4=Charge"
 #define DOW          "0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat"
@@ -361,12 +361,12 @@ enum InvModes
 enum ChargeModes
 {
     Off = 0,
-    EXT_DIGI = 1,
-    Volt_Ampera = 2,
-    Leaf_PDM = 3,
-    TeslaOI = 4,
-    Out_lander = 5,
-    Elcon = 6
+    ExternalDigital = 1,
+    AcChargerModeA = 2,
+    AcChargerModeB = 3,
+    AcChargerModeC = 4,
+    AcChargerModeD = 5,
+    AcChargerModeE = 6
 };
 
 enum ChargeInterfaces
@@ -406,10 +406,10 @@ enum DCDCModes
 enum ShifterModes
 {
     NoShifter = 0,
-    BMWF30 = 1,
-    JLRG1 = 2,
-    JLRG2 =3,
-    BMWE65 =4
+    CanShifterModeA = 1,
+    CanShifterModeB = 2,
+    CanShifterModeC = 3,
+    CanShifterModeD = 4
 
 };
 
@@ -429,14 +429,14 @@ enum Gear
 
 enum vehicles
 {
-    vBMW_E46 = 0,
-    vBMW_E65 = 1,
-    Classic = 2, //used as a flag
-    None = 4,
-    vBMW_E39 = 5,
-    vVAG = 6,
-    vSUBARU = 7,
-    vBMW_E31 = 8
+    VehicleClusterAlt = 0,
+    VehicleLuxuryCan = 1,
+    VehicleClassicIo = 2, //used as a flag
+    VehicleNone = 4,
+    VehicleCluster = 5,
+    VehicleMultiCan = 6,
+    VehicleAwdCan = 7,
+    VehicleAnalogCan = 8
 };
 
 enum _potmodes

@@ -1,5 +1,5 @@
 /*
- * File: src/JLR_G1.cpp
+ * File: src/CanShifterB.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include "JLR_G1.h"
+#include "can_shifter_b.h"
 
 #define JLR_Park 0
 #define JLR_Reverse 1
@@ -29,14 +29,14 @@ uint8_t Cnt3f3 = 0;
 uint8_t Cnt312;
 //uint8_t counter = 0x82;
 
-void JLR_G1::SetCanInterface(CanHardware* c)
+void CanShifterB::SetCanInterface(CanHardware* c)
 {
     can = c;
     can->RegisterUserMessage(0x312);//JLR Gen 1 Gearshifter message
 }
 
 
-void JLR_G1::DecodeCAN(int id, uint32_t* data)
+void CanShifterB::DecodeCAN(int id, uint32_t* data)
 {
     uint8_t* bytes = (uint8_t*)data;
     if (id == 0x312)
@@ -47,7 +47,7 @@ void JLR_G1::DecodeCAN(int id, uint32_t* data)
 
 }
 
-void JLR_G1::sendcan()
+void CanShifterB::sendcan()
 {
     uint8_t bytes[8];
 //-1=Reverse, 0=Neutral, 1=Forward , 2=Park
@@ -127,7 +127,7 @@ void JLR_G1::sendcan()
 }
 
 
-void JLR_G1::Task10Ms()
+void CanShifterB::Task10Ms()
 {
     if(ShtdwnCnt < 20)
     {
@@ -153,7 +153,7 @@ void JLR_G1::Task10Ms()
 }
 
 
-void JLR_G1::Task100Ms()
+void CanShifterB::Task100Ms()
 {
     if(Param::GetInt(Param::opmode)==MOD_OFF) this->gear = NEUTRAL;
     if(Param::GetInt(Param::opmode)==!MOD_RUN)
@@ -166,7 +166,7 @@ void JLR_G1::Task100Ms()
     }
 }
 
-bool JLR_G1::GetGear(Shifter::Sgear& outGear)
+bool CanShifterB::GetGear(Shifter::Sgear& outGear)
 {
     outGear = gear;    //send the shifter pos
     return true; //Let caller know we set a valid gear

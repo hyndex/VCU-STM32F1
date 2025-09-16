@@ -1,5 +1,5 @@
 /*
- * File: src/subaruvehicle.cpp
+ * File: src/awd_can_vehicle.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -10,7 +10,7 @@
 
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/gpio.h>
-#include "subaruvehicle.h"
+#include "awd_can_vehicle.h"
 #include "anain.h"
 #include "my_math.h"
 
@@ -28,22 +28,22 @@
 #define IS_CC_ON(v)                 IS_IN_RANGE(v, 2922)
 #define IS_CC_NONE(v)               IS_IN_RANGE(v, 1019)
 
-SubaruVehicle::SubaruVehicle()
+AwdCanVehicle::AwdCanVehicle()
     : lastGear(NEUTRAL), timerPeriod(10000)
 {
 }
 
 //We use this as an init function
-void SubaruVehicle::SetCanInterface(CanHardware* c)
+void AwdCanVehicle::SetCanInterface(CanHardware* c)
 {
-    c = c;
+    Vehicle::SetCanInterface(c);
     utils::SpeedoStart();//kick start speedo timer if selected
     //Connect PWM outputs to timer hardware
     gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO6 | GPIO7);
     gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO0);
 }
 
-void SubaruVehicle::SetRevCounter(int speed)
+void AwdCanVehicle::SetRevCounter(int speed)
 {
     //This will also shortly change the value of temp and fuel gauge but we assume
     //they are updated soon after and their inertia keeps them stationary
@@ -55,21 +55,21 @@ void SubaruVehicle::SetRevCounter(int speed)
     utils::SpeedoSet(speed_input);//Moved pwm control into Utils
 }
 
-void SubaruVehicle::SetTemperatureGauge(float temp)
+void AwdCanVehicle::SetTemperatureGauge(float temp)
 {
     float dc = temp * 10; //TODO find right factor for value like 0..0.5 or so
     dc *= timerPeriod;
     timer_set_oc_value(TIM3, TIM_OC3, dc);
 }
 
-void SubaruVehicle::SetFuelGauge(float level)
+void AwdCanVehicle::SetFuelGauge(float level)
 {
     float dc = 0.2f + level * 10; //TODO find right factor for value like 0.5..0.8 or so
     dc *= timerPeriod;
     timer_set_oc_value(TIM3, TIM_OC2, dc);
 }
 
-bool SubaruVehicle::GetGear(gear& gear)
+bool AwdCanVehicle::GetGear(gear& gear)
 {
     int gearsel = AnaIn::GP_analog2.Get();
 
@@ -90,7 +90,7 @@ bool SubaruVehicle::GetGear(gear& gear)
     return true;
 }
 
-int SubaruVehicle::GetCruiseState()
+int AwdCanVehicle::GetCruiseState()
 {
     static int prevSel = 0;
     int cruisesel = AnaIn::GP_analog1.Get();
@@ -119,7 +119,7 @@ int SubaruVehicle::GetCruiseState()
     return result;
 }
 
-float SubaruVehicle::GetFrontRearBalance()
+float AwdCanVehicle::GetFrontRearBalance()
 {
     static int prevSel = 0;
     int sel = AnaIn::GP_analog2.Get();
@@ -144,7 +144,7 @@ float SubaruVehicle::GetFrontRearBalance()
     return frontRearBalance;
 }
 
-bool SubaruVehicle::EnableTractionControl()
+bool AwdCanVehicle::EnableTractionControl()
 {
     static int prevSel = 0;
     int sel = AnaIn::GP_analog2.Get();
