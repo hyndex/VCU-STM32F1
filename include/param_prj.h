@@ -262,11 +262,11 @@
 #define INVMODES     "0=None, 1=Inverter_A, 2=Inverter_B, 3=UserCAN, 4=OpenI, 5=Inverter_C, 6=Inverter_D, 7=Inverter_E, 8=Inverter_F"
 #define PLTMODES     "0=Absent, 1=ACStd, 2=ACchg, 3=Error, 4=CCS_Not_Rdy, 5=CCS_Rdy, 6=Static"
 #define VEHMODES     "0=ClusterAlt, 1=LuxuryCan, 2=ClassicIo, 4=None, 5=Cluster, 6=MultiCan, 7=AwdCan, 8=AnalogCan"
-#define BMSMODES     "0=Off, 1=BMS_A, 2=DaisychainSingle, 3=DaisychainDual, 4=BMS_B, 5=BMS_C"
+#define BMSMODES     "0=Off, 1=Bms_A, 2=Bms_B, 3=Bms_C, 4=Bms_D, 5=Bms_E"
 #define OPMODES      "0=Off, 1=Run, 2=Precharge, 3=PchFail, 4=Charge"
 #define DOW          "0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat"
 #define CHGTYPS      "0=Off, 1=AC, 2=DCFC"
-#define DCDCTYPES    "0=NoDCDC, 1=DCDC_A"
+#define DCDCTYPES    "0=None, 1=Dcdc_A"
 #define STATUS       "0=None, 1=UdcLow, 2=UdcHigh, 4=UdcBelowUdcSw, 8=UdcLim, 16=EmcyStop, 32=MProt, 64=PotPressed, 128=TmpHs, 256=WaitStart"
 #define CCS_STATUS   "0=NotRdy, 1=ready, 2=SWoff, 3=interruption, 4=Prech, 5=insulmon, 6=estop, 7=malfunction, 15=invalid"
 #define DIRS         "-1=Reverse, 0=Neutral, 1=Drive, 2=Park"
@@ -279,9 +279,9 @@
 #define ERRLIGHTS    "0=Off, 4=EPC, 8=engine"
 #define CRUISESTATES "0=None, 1=On, 2=Disable, 4=Set, 8=Resume"
 #define CDMSTAT      "1=Charging, 2=Malfunction, 4=ConnLock, 8=BatIncomp, 16=SystemMalfunction, 32=Stop"
-#define HTTYPE       "0=None, 1=Heater_A, 2=Heater_B, 3=Heater_C"
+#define HTTYPE       "0=None, 1=Heater_Can_A, 2=Heater_Lin_A, 3=Heater_Can_B"
 #define HTCTRL       "0=Disable, 1=Enable, 2=Timer"
-#define CHGMODS      "0=Off, 1=External_Digital, 2=Charger_A, 3=Charger_B, 4=Charger_C, 5=Charger_D, 6=Charger_E"
+#define CHGMODS      "0=Off, 1=External_Digital, 2=AC_A, 3=AC_B, 4=AC_C, 5=AC_D, 6=AC_E"
 #define CHGCTRL      "0=Enable, 1=Disable, 2=Timer"
 #define CHGINT       "0=Unused, 1=DCFC_A, 2=DCFC_B, 3=DCFC_C, 4=DCFC_D"
 #define CAN3SPD      "0=k33.3, 1=k500, 2=k100"
@@ -380,26 +380,26 @@ enum ChargeInterfaces
 
 enum HeatType
 {
-    Noheater = 0,
-    AmpHeater = 1,
-    VW = 2,
-        OutlanderHeater = 3
+    HeatTypeNone = 0,
+    HeatTypeCanA = 1,
+    HeatTypeLinA = 2,
+    HeatTypeCanB = 3
 };
 
 enum BMSModes
 {
     BMSModeNoBMS = 0,
-    BMSModeSimpBMS = 1,
-    BMSModeDaisychainSingleBMS = 2,
-    BMSModeDaisychainDualBMS = 3,
-    BMSModeLeafBMS = 4,
-    BMSRenaultKangoo33BMS = 5
+    BmsControllerModeA = 1,
+    BmsControllerModeB = 2,
+    BmsControllerModeC = 3,
+    BmsControllerModeD = 4,
+    BmsControllerModeE = 5
 };
 
 enum DCDCModes
 {
-    NoDCDC = 0,
-    TeslaG2 = 1
+    DcdcModeNone = 0,
+    DcdcModeA = 1
 
 };
 

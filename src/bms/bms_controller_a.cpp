@@ -1,5 +1,5 @@
 /*
- * File: src/simpbms.cpp
+ * File: src/bms_controller_a.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,10 +8,10 @@
 
 
 
-#include "simpbms.h"
+#include "bms_controller_a.h"
 
 /*
- * This module receives messages from SimpBMS and updates the
+ * This module receives messages from BmsControllerA and updates the
  * BMS_MinV, BMS_MaxV, BMS_MinT and BMS_MaxT parameters with the
  * received values. It also implements a timeout to indicate whether
  * the BMS is actively sending data or not. This data can be
@@ -19,21 +19,21 @@
  * working correctly.
  */
 
-void SimpBMS::SetCanInterface(CanHardware* c)
+void BmsControllerA::SetCanInterface(CanHardware* c)
 {
    can = c;
    can->RegisterUserMessage(0x373);
    can->RegisterUserMessage(0x351);
 }
 
-bool SimpBMS::BMSDataValid() {
+bool BmsControllerA::BMSDataValid() {
    // Return false if primary BMS is not sending data.
    if(timeoutCounter < 1) return false;
    return true;
 }
 
 // Return whether charging is currently permitted.
-bool SimpBMS::ChargeAllowed()
+bool BmsControllerA::ChargeAllowed()
 {
    // Refuse to charge if the BMS is not sending data.
    if(!BMSDataValid()) return false;
@@ -52,14 +52,14 @@ bool SimpBMS::ChargeAllowed()
 }
 
 // Return the maximum charge current allowed by the BMS.
-float SimpBMS::MaxChargeCurrent()
+float BmsControllerA::MaxChargeCurrent()
 {
    if(!ChargeAllowed()) return 0;
    return chargeCurrentLimit * 0.1;
 }
 
-// Process voltage and temperature message from SimpBMS.
-void SimpBMS::DecodeCAN(int id, uint8_t *data)
+// Process voltage and temperature message from BmsControllerA.
+void BmsControllerA::DecodeCAN(int id, uint8_t *data)
 {
    if (id == 0x373)
    {
@@ -82,7 +82,7 @@ void SimpBMS::DecodeCAN(int id, uint8_t *data)
    }
 }
 
-void SimpBMS::Task100Ms() {
+void BmsControllerA::Task100Ms() {
    // Decrement timeout counter.
    if(timeoutCounter > 0) timeoutCounter--;
 

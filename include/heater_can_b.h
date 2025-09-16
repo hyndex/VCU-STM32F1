@@ -1,5 +1,5 @@
 /*
- * File: include/OutlanderCanHeater.h
+ * File: include/heater_can_b.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,14 +8,14 @@
 
 
 
-#ifndef OUTLANDERCANHEATER_H
-#define OUTLANDERCANHEATER_H
+#ifndef HEATER_CAN_B_H
+#define HEATER_CAN_B_H
 
 //#include <libopencm3/stm32/usart.h>
 #include <heater.h>
 
 
-class OutlanderCanHeater : public Heater
+class HeaterCanB : public Heater
 {
    public:
       void SetTargetTemperature(float temp);
@@ -33,4 +33,4 @@ class OutlanderCanHeater : public Heater
 
 };
 
-#endif // OUTLANDERCANHEATER_H
+#endif // HEATER_CAN_B_H

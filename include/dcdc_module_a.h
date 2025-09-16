@@ -1,5 +1,5 @@
 /*
- * File: include/TeslaDCDC.h
+ * File: include/dcdc_module_a.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,8 +8,8 @@
 
 
 
-#ifndef TeslaDCDC_H
-#define TeslaDCDC_H
+#ifndef DCDC_MODULE_A_H
+#define DCDC_MODULE_A_H
 #include <stdint.h>
 #include "dcdc.h"
 
@@ -17,7 +17,7 @@
  * https://openinverter.org/wiki/Tesla_Model_S/X_DC/DC_Converter
  */
 
-class TeslaDCDC: public DCDC
+class DcdcModuleA: public DCDC
 {
    public:
       void DecodeCAN(int, uint8_t *);
@@ -29,6 +29,5 @@ class TeslaDCDC: public DCDC
    private:
       uint8_t timer500=0;
 };
-#endif // TeslaDCDC_H
-
+#endif // DCDC_MODULE_A_H
 

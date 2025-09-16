@@ -1,5 +1,5 @@
 /*
- * File: src/OutlanderCanHeater.cpp
+ * File: src/heater_can_b.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,16 +8,16 @@
 
 
 
-#include <OutlanderCanHeater.h>
+#include "heater_can_b.h"
 #include "OutlanderHeartBeat.h"
 
-void OutlanderCanHeater::SetPower(uint16_t power, bool HeatReq)
+void HeaterCanB::SetPower(uint16_t power, bool HeatReq)
 {
     shouldHeat = HeatReq;
     power = power;//mask warning
 }
 
-void OutlanderCanHeater::SetCanInterface(CanHardware* c)
+void HeaterCanB::SetCanInterface(CanHardware* c)
 {
     OutlanderHeartBeat::SetCanInterface(c);//set Outlander Heartbeat on same CAN
 
@@ -25,7 +25,7 @@ void OutlanderCanHeater::SetCanInterface(CanHardware* c)
     can->RegisterUserMessage(0x398);
 }
 
-void OutlanderCanHeater::Task100Ms()
+void HeaterCanB::Task100Ms()
 {
     if (shouldHeat)
     {
@@ -56,22 +56,22 @@ void OutlanderCanHeater::Task100Ms()
     }
 }
 
-void OutlanderCanHeater::SetTargetTemperature(float temp)
+void HeaterCanB::SetTargetTemperature(float temp)
 {
     desiredTemperature = temp;
 }
 
-void OutlanderCanHeater::DecodeCAN(int id, uint32_t data[2])
+void HeaterCanB::DecodeCAN(int id, uint32_t data[2])
 {
     switch (id)
     {
     case 0x398:
-        OutlanderCanHeater::handle398(data);
+        HeaterCanB::handle398(data);
         break;
     }
 }
 
-void OutlanderCanHeater::handle398(uint32_t data[2])
+void HeaterCanB::handle398(uint32_t data[2])
 {
     uint8_t* bytes = (uint8_t*)data;// arrgghhh this converts the two 32bit array into bytes. See comments are useful:)
     unsigned int temp1 = bytes[3] - 40;

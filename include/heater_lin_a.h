@@ -1,5 +1,5 @@
 /*
- * File: include/VWheater.h
+ * File: include/heater_lin_a.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,15 +8,15 @@
 
 
 
-#ifndef VWHEATER_H
-#define VWHEATER_H
+#ifndef HEATER_LIN_A_H
+#define HEATER_LIN_A_H
 
 //#include <libopencm3/stm32/usart.h>
 #include <heater.h>
 #include "linbus.h"
 
 
-class vwHeater : public Heater
+class HeaterLinA : public Heater
 {
    public:
       void SetTargetTemperature(float temp) { (void)temp; } //Not supported (yet)?
@@ -28,4 +28,4 @@ class vwHeater : public Heater
       LinBus* lin;
 };
 
-#endif // VWHEATER_H
+#endif // HEATER_LIN_A_H

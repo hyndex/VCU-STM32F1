@@ -38,17 +38,19 @@ CPPFLAGS    = -Os -Wall -Wextra -Ilibopeninv/include -Iinclude/ -Ilibopencm3/inc
 LDSCRIPT	= $(BINARY).ld
 LDFLAGS  = -Llibopencm3/lib -T$(LDSCRIPT) -march=armv7 -nostartfiles -Wl,--gc-sections,-Map,linker.map
 OBJSL		= $(BINARY).o hwinit.o stm32scheduler.o params.o terminal.o terminal_prj.o \
-           my_string.o digio.o my_fp.o printf.o anain.o throttle.o isa_shunt.o luxury_can_vehicle.o GS450H.o temp_meas.o \
-           cluster_can_vehicle.o multi_can_vehicle.o Can_OI.o MCP2515.o CANSPI.o outlanderinverter.o canhardware.o canmap.o \
-           param_save.o errormessage.o stm32_can.o leafinv.o utils.o terminalcommands.o i3LIM.o \
-           chademo.o amperaheater.o ac_charger_a.o awd_can_vehicle.o iomatrix.o bmw_sbox.o ac_charger_b.o ac_charger_c.o extCharger.o vag_sbox.o \
-           daisychainbms.o simpbms.o ac_charger_d.o Can_OBD2.o cansdo.o TeslaDCDC.o analog_can_vehicle.o can_shifter_a.o \
-           CPC.o ac_charger_e.o RearOutlanderinverter.o linbus.o VWheater.o can_shifter_b.o can_shifter_c.o Foccci.o digipot.o\
-		   OutlanderHeartBeat.o can_shifter_d.o leafbms.o classic_io_vehicle.o kangoobms.o OutlanderCanHeater.o NissLeafMng.o
+           my_string.o digio.o my_fp.o printf.o anain.o throttle.o isa_shunt.o GS450H.o temp_meas.o charger.o \
+           vehicles/luxury_can_vehicle.o vehicles/cluster_can_vehicle.o vehicles/multi_can_vehicle.o vehicles/analog_can_vehicle.o \
+           vehicles/awd_can_vehicle.o vehicles/classic_io_vehicle.o Can_OI.o MCP2515.o CANSPI.o outlanderinverter.o RearOutlanderinverter.o canhardware.o canmap.o \
+           param_save.o errormessage.o stm32_can.o leafinv.o utils.o terminalcommands.o i3LIM.o chademo.o iomatrix.o bmw_sbox.o vag_sbox.o linbus.o \
+           chargers/ac_charger_a.o chargers/ac_charger_b.o chargers/ac_charger_c.o chargers/ac_charger_d.o chargers/ac_charger_e.o chargers/extCharger.o \
+           heaters/heater_can_a.o heaters/heater_can_b.o heaters/heater_lin_a.o \
+           shifters/can_shifter_a.o shifters/can_shifter_b.o shifters/can_shifter_c.o shifters/can_shifter_d.o \
+           bms/bms_controller_a.o bms/bms_controller_b.o bms/bms_controller_c.o bms/bms_controller_d.o dcdc/dcdc_module_a.o \
+           CPC.o Foccci.o digipot.o OutlanderHeartBeat.o NissLeafMng.o Can_OBD2.o cansdo.o
            
 OBJS     = $(patsubst %.o,$(OUT_DIR)/%.o, $(OBJSL))
 vpath %.c src/ libopeninv/src/
-vpath %.cpp src/ libopeninv/src/
+vpath %.cpp src/ src/vehicles/ src/shifters/ src/chargers/ src/heaters/ src/bms/ src/dcdc/ libopeninv/src/
 
 OPENOCD_BASE	= /usr
 OPENOCD		= $(OPENOCD_BASE)/bin/openocd
@@ -102,10 +104,12 @@ $(BINARY): $(OBJS) $(LDSCRIPT)
 
 $(OUT_DIR)/%.o: %.c Makefile
 	@printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)${MKDIR_P} $(dir $@)
 	$(Q)$(CC) $(CFLAGS) -MMD -MP -o $@ -c $<
 
 $(OUT_DIR)/%.o: %.cpp Makefile
 	@printf "  CPP     $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)${MKDIR_P} $(dir $@)
 	$(Q)$(CPP) $(CPPFLAGS) -MMD -MP -o $@ -c $<
 
 DEP = $(OBJS:%.o=%.d)

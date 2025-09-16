@@ -1,5 +1,5 @@
 /*
- * File: src/kangoobms.cpp
+ * File: src/bms_controller_d.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include "kangoobms.h"
+#include "bms_controller_d.h"
 
 /*
  * This module receives messages from SimpBMS and updates the
@@ -19,7 +19,7 @@
  * working correctly.
  */
 
-void KangooBMS::SetCanInterface(CanHardware* c)
+void BmsControllerD::SetCanInterface(CanHardware* c)
 {
    can = c;
    can->RegisterUserMessage(0x155);
@@ -29,14 +29,14 @@ void KangooBMS::SetCanInterface(CanHardware* c)
 
 }
 
-bool KangooBMS::BMSDataValid() {
+bool BmsControllerD::BMSDataValid() {
    // Return false if primary BMS is not sending data.
    if(timeoutCounter < 1) return false;
    return true;
 }
 
 // Return the maximum charge current allowed by the BMS.
-float KangooBMS::MaxChargeCurrent()
+float BmsControllerD::MaxChargeCurrent()
 {
    // if(!ChargeAllowed()) return 0;
    // return chargeCurrentLimit / 1000.0;
@@ -44,7 +44,7 @@ float KangooBMS::MaxChargeCurrent()
 }
 
 // Process voltage and temperature message from SimpBMS.
-void KangooBMS::DecodeCAN(int id, uint8_t *data)
+void BmsControllerD::DecodeCAN(int id, uint8_t *data)
 {
    if (id == 0x155)
    {
@@ -80,7 +80,7 @@ void KangooBMS::DecodeCAN(int id, uint8_t *data)
    } 
 }
 
-void KangooBMS::Task100Ms() {
+void BmsControllerD::Task100Ms() {
    // Decrement timeout counter.
    if(timeoutCounter > 0) timeoutCounter--;
 

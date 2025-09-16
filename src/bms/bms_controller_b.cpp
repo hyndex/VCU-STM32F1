@@ -1,5 +1,5 @@
 /*
- * File: src/leafbms.cpp
+ * File: src/bms_controller_b.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,7 +8,7 @@
 
 
 
-#include "leafbms.h"
+#include "bms_controller_b.h"
 #include "my_fp.h"
 #include "my_math.h"
 
@@ -18,7 +18,7 @@
 static uint8_t LEAF_battery_Type = ZE0_BATTERY;
 static int temperature = 0;
 
-void LeafBMS::SetCanInterface(CanHardware* can)
+void BmsControllerB::SetCanInterface(CanHardware* can)
 {
     can->RegisterUserMessage(0x1DB);//Leaf BMS message 10ms
     can->RegisterUserMessage(0x1DC);//Leaf BMS message 10ms
@@ -30,7 +30,7 @@ void LeafBMS::SetCanInterface(CanHardware* can)
     can->RegisterUserMessage(0x1ED);//Leaf BMS message 10ms (ZE1, only on 62kWh)
 }
 
-void LeafBMS::DecodeCAN(int id, uint8_t * data)
+void BmsControllerB::DecodeCAN(int id, uint8_t * data)
 {
     uint8_t* bytes = (uint8_t*)data;
 
@@ -154,7 +154,7 @@ void LeafBMS::DecodeCAN(int id, uint8_t * data)
     }
 }
 
-bool LeafBMS::isMessageCorrupt(uint8_t *data)
+bool BmsControllerB::isMessageCorrupt(uint8_t *data)
 {
     uint8_t crc = 0;
     uint8_t polynomial = 0x85;

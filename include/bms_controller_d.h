@@ -1,5 +1,5 @@
 /*
- * File: include/daisychainbms.h
+ * File: include/bms_controller_d.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,32 +8,38 @@
 
 
 
-#ifndef DAISYCHAINBMS_H
-#define DAISYCHAINBMS_H
+#ifndef BMS_CONTROLLER_D_H
+#define BMS_CONTROLLER_D_H
 
 #include "bms.h"
 #include "canhardware.h"
 #include <stdint.h>
 
-class DaisychainBMS: public BMS
+
+class BmsControllerD: public BMS
 {
    public:
       void SetCanInterface(CanHardware* c) override;
       void DecodeCAN(int id, uint8_t * data) override;
       float MaxChargeCurrent() override;
       void Task100Ms() override;
+
    private:
       bool BMSDataValid();
-      bool ChargeAllowed();
-      float temperature(uint16_t adc);
-      int timeoutCounter[2];
-      uint16_t minCell[2] = {0, 0};
-      uint16_t maxCell[2] = {0, 0};
-      uint16_t minTemp[2] = {0, 0};
-      uint16_t maxTemp[2] = {0, 0};
+      int messageCounter = 0;
+      int chargeCurrentLimit = 0;
+      int timeoutCounter = 0;
+      uint16_t maxChargeAllowed = 0;
+      uint8_t maxInput = 0;
+      uint8_t maxOutput = 0;
+      uint16_t isolationResistance = 0;
       float minCellV = 0;
       float maxCellV = 0;
       float minTempC = 0;
       float maxTempC = 0;
+      float stateOfCharge = 0;
+      float current = 0;
+      float remainingKHW = 0;
+      float batteryVoltage = 500; //higher than possible so cannot complete precharge until BMS reports battery voltage 
 };
-#endif // DAISYCHAINBMS_H
+#endif // BMS_CONTROLLER_D_H

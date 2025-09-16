@@ -1,5 +1,5 @@
 /*
- * File: include/leafbms.h
+ * File: include/bms_controller_b.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,11 +8,11 @@
 
 
 
-#ifndef LEAFBMS_H
-#define LEAFBMS_H
+#ifndef BMS_CONTROLLER_B_H
+#define BMS_CONTROLLER_B_H
 #include "bms.h"
 
-class LeafBMS: public BMS
+class BmsControllerB: public BMS
 {
 public:
     void SetCanInterface(CanHardware* can) override;
@@ -21,4 +21,4 @@ private:
     bool isMessageCorrupt(uint8_t *data);
 };
 
-#endif // LEAFBMS_H
+#endif // BMS_CONTROLLER_B_H

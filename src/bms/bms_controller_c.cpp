@@ -1,5 +1,5 @@
 /*
- * File: src/daisychainbms.cpp
+ * File: src/bms_controller_c.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,37 +8,37 @@
 
 
 
-#include "daisychainbms.h"
+#include "bms_controller_c.h"
 #include <math.h>
 
 /*
- * This module receives messages from catphish's DaisychainBMS and updates
+ * This module receives messages from catphish's BmsControllerC and updates
  * the BMS_MinV, BMS_MaxV, BMS_MinT and BMS_MaxT parameters with the received
  * values. It also implements a timeout to indicate whether the BMS is actively
  * sending data or not. This data can be used to safely stop any charging
  * process if the BMS is not working correctly.
  */
 
-void DaisychainBMS::SetCanInterface(CanHardware* c)
+void BmsControllerC::SetCanInterface(CanHardware* c)
 {
    can = c;
    can->RegisterUserMessage(0x4f1); // Primary BMS
    can->RegisterUserMessage(0x4f5); // Secondary BMS
 }
 
-bool DaisychainBMS::BMSDataValid() {
+bool BmsControllerC::BMSDataValid() {
    // Return false if primary BMS is not sending data.
    if(timeoutCounter[0] < 1) return false;
 
    // Return false if we're in dual BMS mode and second BMS is not sending data.
-   if(Param::GetInt(Param::BMS_Mode) == BMSModes::BMSModeDaisychainDualBMS)
+   if(Param::GetInt(Param::BMS_Mode) == BMSModes::BmsControllerModeC)
       if(timeoutCounter[1] < 1) return false;
 
    return true;
 }
 
 // Return whether charging is currently permitted.
-bool DaisychainBMS::ChargeAllowed()
+bool BmsControllerC::ChargeAllowed()
 {
    if(!BMSDataValid()) return false;
 
@@ -53,21 +53,21 @@ bool DaisychainBMS::ChargeAllowed()
 }
 
 // Calculate temperature from ADC value.
-float DaisychainBMS::temperature(uint16_t adc)
+float BmsControllerC::temperature(uint16_t adc)
 {
    float r = 0.0000000347363427499292f * adc * adc - 0.001025770762903f * adc + 2.68235340614337f;
    float t = log(r) * -30.5280964239816f + 95.6841501312447f;
    return t;
 }
 
-float DaisychainBMS::MaxChargeCurrent()
+float BmsControllerC::MaxChargeCurrent()
 {
    if(!ChargeAllowed()) return 0;
    return 9998.0;
 }
 
 // Process voltage and temperature message from TI Daisychain BMS.
-void DaisychainBMS::DecodeCAN(int id, uint8_t *data)
+void BmsControllerC::DecodeCAN(int id, uint8_t *data)
 {
    int bms = -1;
    if (id == 0x4f1) bms = 0;
@@ -81,7 +81,7 @@ void DaisychainBMS::DecodeCAN(int id, uint8_t *data)
    
    timeoutCounter[bms] = Param::GetInt(Param::BMS_Timeout) * 10;
 
-   if(Param::GetInt(Param::BMS_Mode) == BMSModes::BMSModeDaisychainDualBMS)
+   if(Param::GetInt(Param::BMS_Mode) == BMSModes::BmsControllerModeC)
    {
       // Dual BMS mode.
       if(minCell[0] < minCell[1]) minCellV = minCell[0] / 13107.0;
@@ -106,7 +106,7 @@ void DaisychainBMS::DecodeCAN(int id, uint8_t *data)
    }
 }
 
-void DaisychainBMS::Task100Ms()
+void BmsControllerC::Task100Ms()
 {
    // Decrement timeout counters.
    if(timeoutCounter[0] > 0) timeoutCounter[0]--;

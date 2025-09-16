@@ -46,7 +46,7 @@
 #include "CANSPI.h"
 #include "chademo.h"
 #include "heater.h"
-#include "amperaheater.h"
+#include "heater_can_a.h"
 #include "inverter.h"
 #include "vehicle.h"
 #include "chargerhw.h"
@@ -63,13 +63,13 @@
 #include "ac_charger_a.h"
 #include "noHeater.h"
 #include "bms.h"
-#include "simpbms.h"
-#include "leafbms.h"
-#include "daisychainbms.h"
+#include "bms_controller_a.h"
+#include "bms_controller_b.h"
+#include "bms_controller_c.h"
 #include "ac_charger_d.h"
 #include "Can_OBD2.h"
 #include "dcdc.h"
-#include "TeslaDCDC.h"
+#include "dcdc_module_a.h"
 #include "analog_can_vehicle.h"
 #include "shifter.h"
 #include "digipot.h"
@@ -82,13 +82,13 @@
 #include "Foccci.h"
 #include "NoInverter.h"
 #include "linbus.h"
-#include "VWheater.h"
+#include "heater_lin_a.h"
 #include "ac_charger_e.h"
 #include "rearoutlanderinverter.h"
 #include "NoVehicle.h"
 #include "classic_io_vehicle.h"
-#include "kangoobms.h"
-#include "OutlanderCanHeater.h"
+#include "bms_controller_d.h"
+#include "heater_can_b.h"
 #include "OutlanderHeartBeat.h"
 
 #define PRECHARGE_TIMEOUT 5  //5s
@@ -168,14 +168,14 @@ static Can_OI openInv;
 static NoInverterClass NoInverter;
 static OutlanderInverter outlanderInv;
 static noHeater Heaternone;
-static AmperaHeater amperaHeater;
-static OutlanderCanHeater outlanderCanHeater;
+static HeaterCanA heaterCanA;
+static HeaterCanB heaterCanB;
 static no_Lever NoGearLever;
 static CanShifterA shifterProfileA;
 static CanShifterD shifterProfileD;
 static CanShifterB shifterProfileB;
 static CanShifterC shifterProfileC;
-static vwHeater heaterVW;
+static HeaterLinA heaterLin;
 static NoVehicle noVehicleProfile;
 static ClassicIoVehicle classicVehicle;
 static Inverter* selectedInverter = &openInv;
@@ -185,12 +185,12 @@ static Chargerhw* selectedCharger = &chargerPDM;
 static Chargerint* selectedChargeInt = &UnUsed;
 static Shifter* selectedShifter = &NoGearLever;
 static BMS BMSnone;
-static SimpBMS BMSsimp;
-static LeafBMS BMSleaf;
-static DaisychainBMS BMSdaisychain;
-static KangooBMS BMSRenaultKangoo33;
+static BmsControllerA bmsControllerA;
+static BmsControllerB bmsControllerB;
+static BmsControllerC bmsControllerC;
+static BmsControllerD bmsControllerD;
 static DCDC DCDCnone;
-static TeslaDCDC DCDCTesla;
+static DcdcModuleA dcdcModuleA;
 static BMS* selectedBMS = &BMSnone;
 static DCDC* selectedDCDC = &DCDCnone;
 static Can_OBD2 canOBD2;
@@ -878,18 +878,18 @@ static void UpdateHeater()
     selectedHeater->DeInit();
     switch (Param::GetInt(Param::Heater))
     {
-    case HeatType::Noheater:
+    case HeatType::HeatTypeNone:
         selectedHeater = &Heaternone;
         break;
-    case HeatType::AmpHeater:
-        selectedHeater = &amperaHeater;
+    case HeatType::HeatTypeCanA:
+        selectedHeater = &heaterCanA;
         break;
-    case HeatType::VW:
-        selectedHeater = &heaterVW;
-        heaterVW.SetLinInterface(lin);
+    case HeatType::HeatTypeLinA:
+        selectedHeater = &heaterLin;
+        heaterLin.SetLinInterface(lin);
         break;
-    case HeatType::OutlanderHeater:
-        selectedHeater = &outlanderCanHeater;
+    case HeatType::HeatTypeCanB:
+        selectedHeater = &heaterCanB;
         OutlanderCAN = true;
         break;
     }
@@ -903,18 +903,18 @@ static void UpdateBMS()
     selectedBMS->DeInit();
     switch (Param::GetInt(Param::BMS_Mode))
     {
-    case BMSModes::BMSModeSimpBMS:
-        selectedBMS = &BMSsimp;
+    case BMSModes::BmsControllerModeA:
+        selectedBMS = &bmsControllerA;
         break;
-    case BMSModes::BMSModeLeafBMS:
-        selectedBMS = &BMSleaf;
+    case BMSModes::BmsControllerModeB:
+    case BMSModes::BmsControllerModeC:
+        selectedBMS = &bmsControllerC;
         break;
-    case BMSModes::BMSModeDaisychainSingleBMS:
-    case BMSModes::BMSModeDaisychainDualBMS:
-        selectedBMS = &BMSdaisychain;
+    case BMSModes::BmsControllerModeD:
+        selectedBMS = &bmsControllerB;
         break;
-    case BMSModes::BMSRenaultKangoo33BMS:
-        selectedBMS = &BMSRenaultKangoo33;
+    case BMSModes::BmsControllerModeE:
+        selectedBMS = &bmsControllerD;
         break;
     default:
         // Default to no BMS
@@ -931,12 +931,12 @@ static void UpdateDCDC()
     selectedDCDC->DeInit();
     switch (Param::GetInt(Param::DCdc_Type))
     {
-    case DCDCModes::NoDCDC:
+    case DCDCModes::DcdcModeNone:
         selectedDCDC = &DCDCnone;
         break;
 
-    case DCDCModes::TeslaG2:
-        selectedDCDC = &DCDCTesla;
+    case DCDCModes::DcdcModeA:
+        selectedDCDC = &dcdcModuleA;
         break;
 
     default:

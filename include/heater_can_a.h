@@ -1,5 +1,5 @@
 /*
- * File: include/amperaheater.h
+ * File: include/heater_can_a.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,17 +8,17 @@
 
 
 
-#ifndef AMPERAHEATER_H
-#define AMPERAHEATER_H
+#ifndef HEATER_CAN_A_H
+#define HEATER_CAN_A_H
 
 #include <heater.h>
 
 
-class AmperaHeater : public Heater
+class HeaterCanA : public Heater
 {
    public:
       /** Default constructor */
-      AmperaHeater();
+      HeaterCanA();
       void SetTargetTemperature(float temp) { (void)temp; } //Not supported (yet)?
       void SetPower(uint16_t power, bool HeatReq);
 
@@ -27,4 +27,4 @@ class AmperaHeater : public Heater
       void SendWakeup();
 };
 
-#endif // AMPERAHEATER_H
+#endif // HEATER_CAN_A_H

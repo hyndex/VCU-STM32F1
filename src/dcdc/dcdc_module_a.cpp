@@ -1,5 +1,5 @@
 /*
- * File: src/TeslaDCDC.cpp
+ * File: src/dcdc_module_a.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,20 +8,20 @@
 
 
 
-#include <TeslaDCDC.h>
+#include "dcdc_module_a.h"
 
 /* This is an interface for The Tesla GEN2 DCDC converter
  * https://openinverter.org/wiki/Tesla_Model_S/X_DC/DC_Converter
  */
 
- void TeslaDCDC::SetCanInterface(CanHardware* c)
+ void DcdcModuleA::SetCanInterface(CanHardware* c)
 {
    can = c;
    can->RegisterUserMessage(0x210);
 }
 
 // Process voltage , current and temperature message from the Model s/x DCDC converter.
-void TeslaDCDC::DecodeCAN(int id, uint8_t *data)
+void DcdcModuleA::DecodeCAN(int id, uint8_t *data)
 {
    if (id == 0x210)
    {
@@ -33,7 +33,7 @@ void TeslaDCDC::DecodeCAN(int id, uint8_t *data)
 
 }
 
-void TeslaDCDC::Task100Ms() {
+void DcdcModuleA::Task100Ms() {
 
 int opmode = Param::GetInt(Param::opmode);
 //static float DCSetVal=Param::GetFloat(Param::DCSetPnt);

@@ -1,5 +1,5 @@
 /*
- * File: src/amperaheater.cpp
+ * File: src/heater_can_a.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -69,7 +69,7 @@ return tmp;
 
 */
 
-#include "amperaheater.h"
+#include "heater_can_a.h"
 #include "CANSPI.h"
 #include "digio.h"
 #include "utils.h"
@@ -77,12 +77,12 @@ return tmp;
 static uCAN_MSG txMessage_Ampera;
 static uint8_t ampera_msg_cnt=0;
 
-AmperaHeater::AmperaHeater()
+HeaterCanA::HeaterCanA()
 {
    //ctor
 }
 
-void AmperaHeater::SetPower(uint16_t power, bool heatReq)
+void HeaterCanA::SetPower(uint16_t power, bool heatReq)
 {
    if(power==0) isAwake = false;//if we are disabled do nothing but set isAwake to false for next wakeup ...
    else//otherwise do everything
@@ -226,7 +226,7 @@ static void delay(void)
  * Wake up all SW-CAN devices by switching the transceiver to HV mode and
  * sending the command 0x100 and switching the HV mode off again.
  */
-void AmperaHeater::SendWakeup()
+void HeaterCanA::SendWakeup()
 {
    DigIo::sw_mode0.Clear();
    DigIo::sw_mode1.Set();  // set HV mode

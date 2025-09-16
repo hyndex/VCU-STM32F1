@@ -1,5 +1,5 @@
 /*
- * File: include/simpbms.h
+ * File: include/bms_controller_c.h
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,14 +8,14 @@
 
 
 
-#ifndef SIMPBMS_H
-#define SIMPBMS_H
+#ifndef BMS_CONTROLLER_C_H
+#define BMS_CONTROLLER_C_H
 
 #include "bms.h"
 #include "canhardware.h"
 #include <stdint.h>
 
-class SimpBMS: public BMS
+class BmsControllerC: public BMS
 {
    public:
       void SetCanInterface(CanHardware* c) override;
@@ -25,11 +25,15 @@ class SimpBMS: public BMS
    private:
       bool BMSDataValid();
       bool ChargeAllowed();
-      int chargeCurrentLimit = 0;  // Sent by Simp as 0.1A per digit and stored the same way.
-      int timeoutCounter = 0;
+      float temperature(uint16_t adc);
+      int timeoutCounter[2];
+      uint16_t minCell[2] = {0, 0};
+      uint16_t maxCell[2] = {0, 0};
+      uint16_t minTemp[2] = {0, 0};
+      uint16_t maxTemp[2] = {0, 0};
       float minCellV = 0;
       float maxCellV = 0;
       float minTempC = 0;
       float maxTempC = 0;
 };
-#endif // SIMPBMS_H
+#endif // BMS_CONTROLLER_C_H

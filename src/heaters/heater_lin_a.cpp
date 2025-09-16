@@ -1,5 +1,5 @@
 /*
- * File: src/VWheater.cpp
+ * File: src/heater_lin_a.cpp
  * Project: STM32 VCU Firmware
  * Author: Chinmoy Bhuyan
  * Copyright (C) 2025 Joulepoint Private Limited
@@ -8,13 +8,13 @@
 
 
 
- #include <VWheater.h>
+ #include <heater_lin_a.h>
 
  static uint8_t processedPower=0;
  static uint8_t TenCount=0;
 
 
- void vwHeater::SetLinInterface(LinBus* l)
+ void HeaterLinA::SetLinInterface(LinBus* l)
  {
     lin = l;
     DigIo::lin_wake.Clear();//Not used on TJA1027
@@ -23,7 +23,7 @@
 
  }
 
- void vwHeater::SetPower(uint16_t power, bool HeatReq)
+ void HeaterLinA::SetPower(uint16_t power, bool HeatReq)
 {
     TenCount++;
     if(TenCount==5)//slow down to 50ms as this is called in 10ms task.
